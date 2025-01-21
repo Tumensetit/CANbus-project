@@ -1,0 +1,3 @@
+https://mermaid.js.org/ -> Try now
+
+Mermaid on netissä oleva ilmainen UML-generaattori. En ole löytänyt ilmaisversiolle tapaa saada suoraa linkkiä editoitavaan tiedostoon, joten tänne tallennetaan sekä tekstimuotoinen kuvaus että tuotettu kuva.
