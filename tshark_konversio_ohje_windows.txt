@@ -1,0 +1,26 @@
+Lataa Wireshark
+https://www.wireshark.org/download.html
+
+Asennus vaiheessa varmista että myös Tshark asennus on ruksittu, se on jollain niistä sivuista.
+
+Asennuksen jälkeen kopioi tiedostopolku kansioon missä Tshark.exe on, minulla näyttää tältä: C:\Program Files\Wireshark
+Laitetaan se PATH:iin, eli avaa ympäristömuuttujat.
+esim windows haulla löytää helposti "Muokkaa järjestelmän ympäristömuuttujia", englanniksi Environment variables.
+Sieltä "ympäristömuuttujat..." auki ja sieltä järjestelmä muuttujien alta valitse PATH ja sitten muokkaa.
+Sitten Uusi, ja liitä siihen tiedostopolku kansioon missä Tshark.exe on, ei siis itse tshark.exe sovellukseen.
+
+Jos CMD on jo auki, sulje se ja avaa uusi, jos ei ole, avaa CMD ja testaa tsharkin toimivuus komennolla
+tshark -v
+vastauksen pitäisi alkaa tämän tyyppisellä tekstillä:
+TShark (Wireshark) 4.4.3 (v4.4.3-0-g66d7a52feb06).
+
+Sitten itse konversio .pgapng raakadatasta .tsv taulukkoon.
+Luo tiedosto haluamallasi nimellä joka päättyy .tsv esim "data.tsv"
+
+Sitten aja kyseinen komento CMD:ssä
+HUOMAA muokata tiedostopolut ensin oikeisiin tiedostoihin, eli ensimmäinen polku on .pcapng raakadata tiedostoon ja 
+toinen on luomaasi .tsv taulukkoon johon data tulee.
+tshark -r C:\path\to\data\data.pcapng -T fields -e frame.time_epoch -e can -e data > C:\path\to\data\tshark_data.tsv 2>&1
+
+Komento ei printtaa mitään onnistumisen merkiksi, mutta suorittamisen onnistumisen tietää siitä, 
+että komennon alle ilmestyy taas C:\>, jota ei näy suorittamisen aikana
