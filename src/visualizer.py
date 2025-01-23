@@ -1,6 +1,7 @@
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
+import json
 
 # Check if the correct number of command line arguments is provided
 if len(sys.argv) != 3:
@@ -11,11 +12,19 @@ if len(sys.argv) != 3:
 input_file = sys.argv[1]
 output_file = sys.argv[2]
 
-# TODO: lue arvot canbus-jsonista. Nyt kovakoodattuina:
-timestamps = [1736342847.985590123, 1736342847.986342700, 1736342847.987495605, 1736342847.988138819,
-              1736342847.988842665, 1736342847.990134583, 1736342847.990648224, 1736342847.991185636,
-              1736342847.991758039, 1736342847.992447984]
-speeds = [1.35, 1.41, 1.53, 1.57, 1.59, 1.71, 1.73, 1.79, 1.81, 1.82]
+timestamps = []
+speeds = []
+with open(input_file, 'r') as file:
+    for line in file:
+        try:
+            data = json.loads(line)
+            unix_epoch = float(data['unix_epoch'])
+            speed = float(data['signal']['SPEED'])
+            timestamps.append(unix_epoch)
+            speeds.append(speed)
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            print(f"Error processing line: {line.strip()} - {e}")
+
 
 # TODO: mietitään millaisia graafeja ylipäänsä halutaan...
 df = pd.DataFrame({'Timestamps': timestamps, 'Speeds': speeds})
