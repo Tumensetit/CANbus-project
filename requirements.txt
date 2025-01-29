@@ -1,0 +1,28 @@
+# Canbus-projektissa käytetyt python-kirjastot:
+# Lisätietoa esim: 
+# https://www.geeksforgeeks.org/how-to-create-requirements-txt-file-in-python/
+# https://www.geeksforgeeks.org/how-to-install-python-packages-with-requirements-txt/
+argparse-addons==0.12.0
+bitstruct==8.19.0
+cantools==40.1.1
+contourpy==1.3.1
+crccheck==1.3.0
+cycler==0.12.1
+diskcache==5.6.3
+fonttools==4.55.4
+kiwisolver==1.4.8
+matplotlib==3.10.0
+msgpack==1.1.0
+numpy==2.2.2
+packaging==24.2
+pandas==2.2.3
+pillow==11.1.0
+pyparsing==3.2.1
+python-can==4.5.0
+python-dateutil==2.9.0.post0
+pytz==2024.2
+six==1.17.0
+textparser==0.24.0
+typing_extensions==4.12.2
+tzdata==2025.1
+wrapt==1.17.2
