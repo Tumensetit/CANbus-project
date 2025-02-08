@@ -14,10 +14,20 @@ def generate_output(timestamp, canID, data): # TODO: replace canID with decoded 
     output_json = {
         "unix_epoch": timestamp,
         "bo": f"TODO.. {canID}", # TODO: what should we call the BO_ value and how do we parse it?
-        "signal": data
+        "signal": convert_serializable(data)
     }
 
     return output_json
+
+def convert_serializable(data):
+    if isinstance(data, (int, float, str, bool)):
+        return data
+    elif isinstance(data, dict):
+        return {key: convert_serializable(value) for key, value in data.items()}
+    elif isinstance(data, list):
+        return [convert_serializable(item) for item in data]
+    else:
+        return str(data)
 
 # Check if the correct number of command line arguments is provided
 if len(sys.argv) != 3:
@@ -29,6 +39,8 @@ input_file = sys.argv[1]
 vehicle_db_file = sys.argv[2]
 
 db = cantools.database.load_file(vehicle_db_file)
+
+textfile = open("decoder_output.txt", "w")
 
 # Read the input qqVEP file and extract keys from the "Extra" column
 with open(input_file, 'r') as input:
@@ -43,9 +55,14 @@ with open(input_file, 'r') as input:
         try:
             decoded_data = db.decode_message(canID, padded_data_bytes)
             output = generate_output(timestamp, canID, decoded_data)
-            print(output)
+            # print(output)
+            textfile.write(json.dumps(output))
+            textfile.write("\n")
         except KeyError:
             continue	# TODO: what do we do with the non found values?
+
+textfile.close()
+print("Decoder output file created")
 
 
 
