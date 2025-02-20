@@ -11,9 +11,11 @@ def parse_canID(text):
     return None
 
 def generate_output(timestamp, canID, data): # TODO: replace canID with decoded value
+    message = db.get_message_by_frame_id(canID)
+    message_name = message.name
     output_json = {
         "unix_epoch": timestamp,
-        "bo": f"TODO.. {canID}", # TODO: what should we call the BO_ value and how do we parse it?
+        "CanID": message_name, # TODO: what should we call the BO_ value and how do we parse it? Changed it to CanID -T
         "signal": convert_serializable(data)
     }
 
