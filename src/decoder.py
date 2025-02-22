@@ -76,12 +76,15 @@ db = cantools.database.load_file(vehicle_db_file)
 decoded_lines = []
 decode(decoded_lines)
 
+if len(decoded_lines) == 0:
+    print("No lines found.")
+    sys.exit()
+
 print("Saving the results")
 # Save the output to a file
 with open('decoder_output.txt', 'a') as outputfile:
     json.dump(decoded_lines, outputfile, indent=2)
 
 print("Decoder output file created")
-
 show_stats(decoded_lines)
 
