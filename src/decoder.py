@@ -43,7 +43,8 @@ db = cantools.database.load_file(vehicle_db_file)
 
 textfile = open("decoder_output.txt", "w")
 
-# Read the input qqVEP file and extract keys from the "Extra" column
+# Read the input file decode it and save to a file
+print("Decoding started...")
 with open(input_file, 'r') as input:
     reader = csv.reader(input, delimiter='\t')
     for line in reader:
