@@ -40,8 +40,7 @@ vehicle_db_file = sys.argv[2]
 query = sys.argv[3]
 
 db = cantools.database.load_file(vehicle_db_file)
-
-textfile = open("decoder_output.txt", "w")
+decoded_lines = []
 
 # Read the input file decode it and save to a file
 print("Decoding started...")
@@ -59,13 +58,16 @@ with open(input_file, 'r') as input:
             message = db.get_message_by_frame_id(canID)
             # TODO: query should be optional This assumes it's mandatory
             if message.name == query:
-                output = generate_output(timestamp, message.name, decoded_data)
-                textfile.write(json.dumps(output))
-                textfile.write("\n")
+                decoded_line = generate_output(timestamp, message.name, decoded_data)
+                decoded_lines.append(decoded_line)
         except KeyError:
             continue	# TODO: what do we do with the non found values?
+print("Decoding ready. Saving the results..")
 
-textfile.close()
+# Save the output to a file
+with open('decoder_output.txt', 'a') as outputfile:
+    json.dump(decoded_lines, outputfile, indent=2)
+
 print("Decoder output file created")
 
 
