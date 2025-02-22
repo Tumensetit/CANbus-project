@@ -60,8 +60,21 @@ def show_stats(decoded_lines):
     duration = last-first
     print("time between first and last signal: " + str(duration) +"s")
     print("signals/sec: " + str(len(decoded_lines)/duration))
+    signal = get_signal_to_show(decoded_lines[0]['CanID'])
+    print("TODO: standard deviation implementation")
+    print("POC tässä yksi signaali. Nyt pitäisi lakea loput: signal=" + signal + ", value: "  + str(decoded_lines[0]['signal'][signal]))
+
+def get_signal_to_show(canId):
+    # TODO: täydennä tämä mapper
+    mapping = {
+        "SPEED": "SPEED",
+        "KINEMATICS": "YAW_RATE"
+    }
+    return mapping.get(canId, "ERROR: Key not found. Add the signal to mapping.")
 
 
+
+## Main starts here
 # Check if the correct number of command line arguments is provided
 if len(sys.argv) != 4:
     print("Usage: python3 " + sys.argv[0] + " input_file vehicle_dbc_file query")
