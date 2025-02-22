@@ -11,11 +11,9 @@ def parse_canID(text):
     return None
 
 def generate_output(timestamp, canID, data): # TODO: replace canID with decoded value
-    message = db.get_message_by_frame_id(canID)
-    message_name = message.name
     output_json = {
         "unix_epoch": timestamp,
-        "CanID": message_name, # TODO: what should we call the BO_ value and how do we parse it? Changed it to CanID -T
+        "CanID": canID,
         "signal": convert_serializable(data)
     }
 
@@ -32,13 +30,14 @@ def convert_serializable(data):
         return str(data)
 
 # Check if the correct number of command line arguments is provided
-if len(sys.argv) != 3:
-    print("Usage: python3 " + sys.argv[0] + " input_file vehicle_dbc_file")
+if len(sys.argv) != 4:
+    print("Usage: python3 " + sys.argv[0] + " input_file vehicle_dbc_file query")
     sys.exit(1)
 
 # Get file names from command line arguments
 input_file = sys.argv[1]
 vehicle_db_file = sys.argv[2]
+query = sys.argv[3]
 
 db = cantools.database.load_file(vehicle_db_file)
 
@@ -56,10 +55,12 @@ with open(input_file, 'r') as input:
         # decode the message from the database
         try:
             decoded_data = db.decode_message(canID, padded_data_bytes)
-            output = generate_output(timestamp, canID, decoded_data)
-            # print(output)
-            textfile.write(json.dumps(output))
-            textfile.write("\n")
+            message = db.get_message_by_frame_id(canID)
+            # TODO: query should be optional This assumes it's mandatory
+            if message.name == query:
+                output = generate_output(timestamp, message.name, decoded_data)
+                textfile.write(json.dumps(output))
+                textfile.write("\n")
         except KeyError:
             continue	# TODO: what do we do with the non found values?
 
