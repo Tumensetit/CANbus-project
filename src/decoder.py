@@ -52,6 +52,15 @@ def decode(decoded_lines):
                 continue	# TODO: what do we do with the non found values?
     print("Decoding ready.")
 
+def show_stats(decoded_lines):
+    print("Statistics: ")
+    print("\t# of signals: " + str(len(decoded_lines)))
+    first = float(decoded_lines[0]['unix_epoch'])
+    last = float(decoded_lines[-1]['unix_epoch'])
+    duration = last-first
+    print("time between first and last signal: " + str(duration) +"s")
+    print("signals/sec: " + str(len(decoded_lines)/duration))
+
 
 # Check if the correct number of command line arguments is provided
 if len(sys.argv) != 4:
@@ -73,4 +82,6 @@ with open('decoder_output.txt', 'a') as outputfile:
     json.dump(decoded_lines, outputfile, indent=2)
 
 print("Decoder output file created")
+
+show_stats(decoded_lines)
 
