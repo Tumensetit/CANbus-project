@@ -3,6 +3,7 @@ import csv
 import json
 import re
 import cantools
+import statistics
 
 def parse_canID(text):
     match = re.search(r"Ext\. ID: (\d+)", text)
@@ -60,9 +61,17 @@ def show_stats(decoded_lines):
     duration = last-first
     print("time between first and last signal: " + str(duration) +"s")
     print("signals/sec: " + str(len(decoded_lines)/duration))
-    signal = get_signal_to_show(decoded_lines[0]['CanID'])
-    print("TODO: standard deviation implementation")
-    print("POC tässä yksi signaali. Nyt pitäisi lakea loput: signal=" + signal + ", value: "  + str(decoded_lines[0]['signal'][signal]))
+
+    print("Calculating standard deviations...")
+    signal_keys = decoded_lines[0]['signal'].keys()
+    data = {key: [] for key in signal_keys}
+    for entry in decoded_lines:
+        for key, value in entry['signal'].items():
+            data[key].append(value)
+
+    for key, values in data.items():
+        stddev = statistics.stdev(values)
+        print(f"{key}: {stddev:.6f}")
 
 def get_signal_to_show(canId):
     # TODO: täydennä tämä mapper
