@@ -73,16 +73,6 @@ def show_stats(decoded_lines):
         stddev = statistics.stdev(values)
         print(f"{key}: {stddev:.6f}")
 
-def get_signal_to_show(canId):
-    # TODO: täydennä tämä mapper
-    mapping = {
-        "SPEED": "SPEED",
-        "KINEMATICS": "YAW_RATE"
-    }
-    return mapping.get(canId, "ERROR: Key not found. Add the signal to mapping.")
-
-
-
 ## Main starts here
 # Check if the correct number of command line arguments is provided
 if len(sys.argv) != 4:
