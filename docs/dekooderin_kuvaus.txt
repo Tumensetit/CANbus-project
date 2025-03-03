@@ -1,0 +1,33 @@
+dokumentoi:
+# koodin vaiheet:
+## yleiskuvaus
+
+TODO: mermaidilla tehty sekvenssikaavio ja sen selitys tähän
+raakadatan purku -> dekoodaus -> tallennus/tilastointi
+
+## raakadatan dekoodaus
+Raakadata on .pcapng -muodossa, eli kaapattuja verkkopaketteja.
+
+Raakadataa voi käsitellä esim. wiresharkilla tai tsharkilla. Pythonilla voi käyttää vaikkapa pyshark-kirjastoa.
+
+Raakadatasta löytyy kaksi olennaista tietoa, .canId ja .data. Näistä canId kertoo, mikä ECU on kyseessä, ja data sisältää varsinaisen datan.
+Varsinaisen datan lisäksi .pcapng -paketit sisältävät paketinkaappaukseen liittyvää metadataa. Näistä yksi olennaisimmista on paketin kaappauksen päivämäärä- ja kellonaikatiedot. Ne löytyvät sekä ihmisen luettavassa että koneluettavassa muodossa. Jatkokäsittelyä varten koneluettava unix epoch on projektin kannalta hyödyllisempi.
+
+
+Lisätietoa:
+https://wiki.wireshark.org/Development/PcapNg
+https://pypi.org/project/pyshark/
+
+## dekoodaus
+Raakadata konvertoidaan ymmärrettäväksi informaatioksi dekoodaamalla se mallikohtaista .dbc -tiedostoa vasten.
+
+Pythonin cantools-kirjasto dekoodaa raakadatan .canId -kentästä ECU:n nimen, ja .data -kentästä signaalin osat.
+
+Lisätietoa:
+https://github.com/commaai/opendbc
+https://pypi.org/project/cantools/
+https://www.csselectronics.com/pages/can-dbc-file-database-intro
+
+## Lopputuotos: json
+
+-> tähän kuvaus jsonin rakenteesta
