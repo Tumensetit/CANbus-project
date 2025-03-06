@@ -3,7 +3,7 @@ import csv
 import json
 import re
 import cantools
-import statistics
+import pyshark
 
 def parse_canID(text):
     match = re.search(r"Ext\. ID: (\d+)", text)
@@ -33,24 +33,24 @@ def convert_serializable(data):
 def decode(decoded_lines):
     # Read the input file decode it and save to a file
     print("Decoding started...")
-    with open(input_file, 'r') as input:
-        reader = csv.reader(input, delimiter='\t')
-        for line in reader:
-            timestamp = line[0]
-            # TODO: is canID the right term? BO_ in .dbc
-            canID = parse_canID(line[1]) # TODO: error handling
-            data = line[2]
-            padded_data_bytes = bytes.fromhex(data.zfill(16)) # pad to 8-byte value
-            # decode the message from the database
-            try:
-                decoded_data = db.decode_message(canID, padded_data_bytes)
-                message = db.get_message_by_frame_id(canID)
-                # TODO: query should be optional This assumes it's mandatory
-                if message.name == query:
-                    decoded_line = generate_output(timestamp, message.name, decoded_data)
-                    decoded_lines.append(decoded_line)
-            except KeyError:
-                continue	# TODO: what do we do with the non found values?
+    input = pyshark.FileCapture(input_file)
+    while not input._eof_reached:
+        packet = input.next()
+        timestamp = packet.sniff_timestamp
+        # TODO: is canID the right term? BO_ in .dbc
+        canID = packet.layers[0].get_field_value("id") # parse_canID(line[1]) # TODO: error handling
+        data = packet.layers[1].get_field_value("data")
+        padded_data_bytes = bytes.fromhex(data.zfill(16)) # pad to 8-byte value
+        # decode the message from the database
+        try:
+            decoded_data = db.decode_message(canID, padded_data_bytes)
+            message = db.get_message_by_frame_id(canID)
+            # TODO: query should be optional This assumes it's mandatory
+            if message.name == query:
+                decoded_line = generate_output(timestamp, message.name, decoded_data)
+                decoded_lines.append(decoded_line)
+        except KeyError:
+            continue	# TODO: what do we do with the non found values?
     print("Decoding ready.")
 
 def show_stats(decoded_lines):
@@ -61,17 +61,23 @@ def show_stats(decoded_lines):
     duration = last-first
     print("time between first and last signal: " + str(duration) +"s")
     print("signals/sec: " + str(len(decoded_lines)/duration))
+    signal = get_signal_to_show(decoded_lines[0]['CanID'])
+    print("TODO: standard deviation implementation")
+    print("POC tässä yksi signaali. Nyt pitäisi lakea loput: signal=" + signal + ", value: "  + str(decoded_lines[0]['signal'][signal]))
 
-    print("Calculating standard deviations...")
-    signal_keys = decoded_lines[0]['signal'].keys()
-    data = {key: [] for key in signal_keys}
-    for entry in decoded_lines:
-        for key, value in entry['signal'].items():
-            data[key].append(value)
+def get_signal_to_show(canId):
+    # TODO: täydennä tämä mapper
+    mapping = {
+        "SPEED": "SPEED",
+        "KINEMATICS": "YAW_RATE"
+    }
+    return mapping.get(canId, "ERROR: Key not found. Add the signal to mapping.")
 
-    for key, values in data.items():
-        stddev = statistics.stdev(values)
-        print(f"{key}: {stddev:.6f}")
+def capture_from_file(input_file):
+    return pyshark.FileCapture(input_file=input_file, keep_packets=False)
+        
+    
+    
 
 ## Main starts here
 # Check if the correct number of command line arguments is provided
