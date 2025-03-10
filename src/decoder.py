@@ -34,8 +34,7 @@ def decode(decoded_lines):
     # Read the input file decode it and save to a file
     print("Decoding started...")
     input = pyshark.FileCapture(input_file)
-    while not input._eof_reached:
-        packet = input.next()
+    for packet in input:
         timestamp = packet.sniff_timestamp
         # TODO: is canID the right term? BO_ in .dbc
         canID = packet.layers[0].get_field_value("id") # parse_canID(line[1]) # TODO: error handling
