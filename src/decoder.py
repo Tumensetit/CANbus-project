@@ -37,7 +37,7 @@ def decode(decoded_lines):
     for packet in input:
         timestamp = packet.sniff_timestamp
         # TODO: is canID the right term? BO_ in .dbc
-        canID = packet.layers[0].get_field_value("id") # parse_canID(line[1]) # TODO: error handling
+        canID = int(packet.layers[0].get_field_value("id")) # canID needs to be an int for further processing
         data = packet.layers[1].get_field_value("data")
         padded_data_bytes = bytes.fromhex(data.zfill(16)) # pad to 8-byte value
         # decode the message from the database
