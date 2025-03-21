@@ -33,12 +33,15 @@ def convert_serializable(data):
 def decode(decoded_lines):
     # Read the input file decode it and save to a file
     print("Decoding started...")
-    input = pyshark.FileCapture(input_file)
+    input = pyshark.FileCapture(input_file, keep_packets=False)
     while not input._eof_reached:
-        packet = input.next()
+        try:
+            packet = input.next()
+        except StopIteration:
+            break
         timestamp = packet.sniff_timestamp
         # TODO: is canID the right term? BO_ in .dbc
-        canID = packet.layers[0].get_field_value("id") # parse_canID(line[1]) # TODO: error handling
+        canID = int(packet.layers[0].get_field_value("id")) # parse_canID(line[1]) # TODO: error handling
         data = packet.layers[1].get_field_value("data")
         padded_data_bytes = bytes.fromhex(data.zfill(16)) # pad to 8-byte value
         # decode the message from the database
@@ -63,7 +66,7 @@ def show_stats(decoded_lines):
     print("signals/sec: " + str(len(decoded_lines)/duration))
     signal = get_signal_to_show(decoded_lines[0]['CanID'])
     print("TODO: standard deviation implementation")
-    print("POC tässä yksi signaali. Nyt pitäisi lakea loput: signal=" + signal + ", value: "  + str(decoded_lines[0]['signal'][signal]))
+    #print("POC tässä yksi signaali. Nyt pitäisi lakea loput: signal=" + signal + ", value: "  + str(decoded_lines[0]['signal'][signal]))
 
 def get_signal_to_show(canId):
     # TODO: täydennä tämä mapper
@@ -72,12 +75,7 @@ def get_signal_to_show(canId):
         "KINEMATICS": "YAW_RATE"
     }
     return mapping.get(canId, "ERROR: Key not found. Add the signal to mapping.")
-
-def capture_from_file(input_file):
-    return pyshark.FileCapture(input_file=input_file, keep_packets=False)
         
-    
-    
 
 ## Main starts here
 # Check if the correct number of command line arguments is provided
