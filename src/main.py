@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description="Argument parser for Decoder")
 
 parser.add_argument("-i", "--inputfile", type=str, help="Name of the file that contains the data to be decoded")
 parser.add_argument("-d", "--dbcfile", type=str, help="Name of the file that is used to decode the inputfile(ends in .dbc)")
-parser.add_argument("-q", "--query", type=str, help="Which ECUs data would you like to query? example given: BRAKE")
+parser.add_argument("-q", "--query", type=str, help="Which ECUs data would you like to query? example given: BRAKE", required=False)
 
 args = parser.parse_args()
 

@@ -53,7 +53,7 @@ def decode(decoded_lines, vehicle_db_file, input_file, query):
                 decoded_data = db.decode_message(canID, padded_data_bytes)
                 message = db.get_message_by_frame_id(canID)
                 # TODO: query should be optional This assumes it's mandatory
-                if message.name == query:
+                if query == None or message.name == query:
                     decoded_line = generate_output(timestamp, message.name, decoded_data)
                     decoded_lines.append(decoded_line)
             except KeyError:
@@ -69,16 +69,25 @@ def show_stats(decoded_lines):
     print("time between first and last signal: " + str(duration) +"s")
     print("signals/sec: " + str(len(decoded_lines)/duration))
 
-    print("Calculating standard deviations...")
-    signal_keys = decoded_lines[0]['signal'].keys()
-    data = {key: [] for key in signal_keys}
+    data = {}
+
     for entry in decoded_lines:
+        can_id = entry['CanID']
         for key, value in entry['signal'].items():
-            data[key].append(value)
+            combined_key = f"{can_id}.{key}"
+            if combined_key not in data:
+                data[combined_key] = []
+            if isinstance(value, (int, float)):
+                data[combined_key].append(value)
+            else:
+                print(f"Non-numerical value \"{value}\" for {combined_key}, cannot calculate standard deviation")
 
     for key, values in data.items():
-        stddev = statistics.stdev(values)
+        if len(values) > 1:  # Avoid statistics error for single-value lists
+            stddev = statistics.stdev(values)
+        else:
+            stddev = 0.0  # Default to 0 if only one value exists
         print(f"{key}: {stddev:.6f}")
-        diffpriv_stats(key, values)
+        #diffpriv_stats(key, values)
 
 
