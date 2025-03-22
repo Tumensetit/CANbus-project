@@ -1,9 +1,6 @@
-import sys
 import csv
-import json
 import re
 import cantools
-import argparse
 import statistics
 
 from diffpriv import diffpriv_stats
@@ -52,7 +49,6 @@ def decode(decoded_lines, vehicle_db_file, input_file, query):
             try:
                 decoded_data = db.decode_message(canID, padded_data_bytes)
                 message = db.get_message_by_frame_id(canID)
-                # TODO: query should be optional This assumes it's mandatory
                 if query == None or message.name == query:
                     decoded_line = generate_output(timestamp, message.name, decoded_data)
                     decoded_lines.append(decoded_line)
@@ -60,7 +56,7 @@ def decode(decoded_lines, vehicle_db_file, input_file, query):
                 continue	# TODO: what do we do with the non found values?
     print("Decoding ready.")
 
-def show_stats(decoded_lines):
+def show_stats(decoded_lines, diffpriv):
     print("Statistics: ")
     print("\t# of signals: " + str(len(decoded_lines)))
     first = float(decoded_lines[0]['unix_epoch'])
@@ -88,6 +84,8 @@ def show_stats(decoded_lines):
         else:
             stddev = 0.0  # Default to 0 if only one value exists
         print(f"{key}: {stddev:.6f}")
-        #diffpriv_stats(key, values)
+
+        if diffpriv == True:
+            diffpriv_stats(key, values)
 
 
