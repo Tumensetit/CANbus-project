@@ -8,10 +8,12 @@ from decoder import *
 
 parser = argparse.ArgumentParser(description="Argument parser for Decoder")
 
-parser.add_argument("-i", "--inputfile", type=str, help="Name of the file that contains the data to be decoded")
-parser.add_argument("-d", "--dbcfile", type=str, help="Name of the file that is used to decode the inputfile(ends in .dbc)")
-parser.add_argument("-q", "--query", type=str, help="Which ECUs data would you like to query? example given: BRAKE", required=False)
-parser.add_argument("--diffpriv", action='store_true', help="Print experimental diffpriv mean", required=False)
+required_group = parser.add_argument_group("Required arguments")
+required_group.add_argument("-i", "--inputfile", type=str, help="Name of the file that contains the data to be decoded")
+required_group.add_argument("-d", "--dbcfile", type=str, help="Name of the file that is used to decode the inputfile(ends in .dbc)")
+optional_group = parser.add_argument_group("Optional arguments")
+optional_group.add_argument("-q", "--query", type=str, help="Which ECUs data would you like to query? example given: BRAKE", required=False)
+optional_group.add_argument("--diffpriv", action='store_true', help="Print experimental diffpriv mean", required=False)
 
 args = parser.parse_args()
 
