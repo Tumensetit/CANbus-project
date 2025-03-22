@@ -6,7 +6,7 @@ from decoder import *
 
 
 
-parser = argparse.ArgumentParser(description="Argument parser for Decoder")
+parser = argparse.ArgumentParser(description="CAN vehicle data decoder and analyser")
 
 required_group = parser.add_argument_group("Required arguments")
 required_group.add_argument("-i", "--inputfile", type=str, help="Name of the file that contains the data to be decoded")
