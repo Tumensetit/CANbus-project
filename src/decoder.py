@@ -1,9 +1,12 @@
-import sys
 import csv
-import json
 import re
 import cantools
 import pyshark
+
+from diffpriv import diffpriv_stats
+
+
+
 
 def parse_canID(text):
     match = re.search(r"Ext\. ID: (\d+)", text)
@@ -30,7 +33,7 @@ def convert_serializable(data):
     else:
         return str(data)
 
-def decode(decoded_lines):
+def decode(decoded_lines, vehicle_db_file, input_file, query):
     # Read the input file decode it and save to a file
     print("Decoding started...")
     input = pyshark.FileCapture(input_file, keep_packets=False)
@@ -56,7 +59,7 @@ def decode(decoded_lines):
             continue	# TODO: what do we do with the non found values?
     print("Decoding ready.")
 
-def show_stats(decoded_lines):
+def show_stats(decoded_lines, diffpriv):
     print("Statistics: ")
     print("\t# of signals: " + str(len(decoded_lines)))
     first = float(decoded_lines[0]['unix_epoch'])
@@ -64,43 +67,28 @@ def show_stats(decoded_lines):
     duration = last-first
     print("time between first and last signal: " + str(duration) +"s")
     print("signals/sec: " + str(len(decoded_lines)/duration))
-    signal = get_signal_to_show(decoded_lines[0]['CanID'])
-    print("TODO: standard deviation implementation")
-    #print("POC tässä yksi signaali. Nyt pitäisi lakea loput: signal=" + signal + ", value: "  + str(decoded_lines[0]['signal'][signal]))
 
-def get_signal_to_show(canId):
-    # TODO: täydennä tämä mapper
-    mapping = {
-        "SPEED": "SPEED",
-        "KINEMATICS": "YAW_RATE"
-    }
-    return mapping.get(canId, "ERROR: Key not found. Add the signal to mapping.")
-        
+    data = {}
 
-## Main starts here
-# Check if the correct number of command line arguments is provided
-if len(sys.argv) != 4:
-    print("Usage: python3 " + sys.argv[0] + " input_file vehicle_dbc_file query")
-    sys.exit(1)
+    for entry in decoded_lines:
+        can_id = entry['CanID']
+        for key, value in entry['signal'].items():
+            combined_key = f"{can_id}.{key}"
+            if combined_key not in data:
+                data[combined_key] = []
+            if isinstance(value, (int, float)):
+                data[combined_key].append(value)
+            else:
+                print(f"Non-numerical value \"{value}\" for {combined_key}, cannot calculate standard deviation")
 
-# Get file names from command line arguments
-input_file = sys.argv[1]
-vehicle_db_file = sys.argv[2]
-query = sys.argv[3]
+    for key, values in data.items():
+        if len(values) > 1:  # Avoid statistics error for single-value lists
+            stddev = statistics.stdev(values)
+        else:
+            stddev = 0.0  # Default to 0 if only one value exists
+        print(f"{key}: {stddev:.6f}")
 
-db = cantools.database.load_file(vehicle_db_file)
-decoded_lines = []
-decode(decoded_lines)
+        if diffpriv == True:
+            diffpriv_stats(key, values)
 
-if len(decoded_lines) == 0:
-    print("No lines found.")
-    sys.exit()
-
-print("Saving the results")
-# Save the output to a file
-with open('decoder_output.txt', 'a') as outputfile:
-    json.dump(decoded_lines, outputfile, indent=2)
-
-print("Decoder output file created")
-show_stats(decoded_lines)
 

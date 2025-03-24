@@ -1,3 +1,23 @@
-https://mermaid.js.org/ -> Try now
-
 Mermaid on netissä oleva ilmainen UML-generaattori. En ole löytänyt ilmaisversiolle tapaa saada suoraa linkkiä editoitavaan tiedostoon, joten tänne tallennetaan sekä tekstimuotoinen kuvaus että tuotettu kuva.
+
+Ilmaisversio löytyy: mermaidchart.com/play
+
+#1 Syötä tekstikenttään:
+
+sequenceDiagram
+    participant Car
+    participant Decoder
+    participant FileSystem
+    participant CAN_Database
+    
+    Car->>Decoder: Lähtötietoina ajodata .pcapng -muodossa sekä ajoneuvon .dbc (Can database)
+    Decoder->>Decoder: Raakadatan purku, mäppäys dbc-tiedostoa vasten
+    Decoder->>FileSystem: Dekoodatun tiedon tallennus
+    Decoder->>Decoder: Tilastojen laskeminen ja näyttäminen
+
+
+
+
+#2 Käyttöliittymästä saa kuvan ulos vektorigrafiikkana: 
+export -> Image as svg
+#3 konvertoi svg kuvaksi vaikkapa macin sipsillä: sips -s input.svg --out output.png

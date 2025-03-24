@@ -1,13 +1,12 @@
 # Ohjeet:
 
-# Raakadatan konversio tsharkilla:
-src/raakadata_konversio.sh /path/to/can_dump.pcapng /path/to/candump_parsed.tsv
+Ohjelma tallentaa dekoodauksen tuloksen json-formaatissa, ja tulostaa tilastot näytölle.
 
-# .tsv -muotoisen tiedon dekoodaus:
-python3 src/decoder.py /path/to/candump_parsed.tsv ./data/toyota_rav4_hybrid_2017_pt_generated.dbc
+TODO: asennusohje, jotta vaadittavat python-paketit ovat satavilla. Odottaa koodin refaktorointia normaaliksi python-projektiksi)
 
-.. Toistaiseksi tulostaa näytölle. TODO: tulostus tiedostoon, filtteröinti.
+Käyttöohje löytyy ohjelmasta:
+% python3 src/main.py --help
 
-# Visualisoi:
-python3 src/visualizer.py input_from_decoder output.png
+Esimerkki:
+python3 src/main.py -i <datatiedosto> -d data/toyota_rav4_hybrid_2017_pt_generated.dbc -Q BREAK --diffpriv
 
