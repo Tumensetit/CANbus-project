@@ -37,14 +37,11 @@ def convert_serializable(data):
 
 def decode(decoded_lines, vehicle_db_file, input_file, query):
     # Read the input file decode it and save to a file
-    print("Decoding started...")
     input = pyshark.FileCapture(input_file, keep_packets=False)
     db = cantools.database.load_file(vehicle_db_file)
-    while not input._eof_reached:
-        try:
-            packet = input.next()
-        except StopIteration:
-            break
+
+    print("Decoding started...")
+    for packet in input:
         timestamp = packet.sniff_timestamp
         # TODO: is canID the right term? BO_ in .dbc
         canID = int(packet.layers[0].get_field_value("id")) # canID needs to be an int for further processing
