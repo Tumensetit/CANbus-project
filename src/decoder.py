@@ -1,7 +1,9 @@
 import csv
 import re
 import cantools
+import cantools.database
 import pyshark
+import statistics
 
 from diffpriv import diffpriv_stats
 
@@ -37,6 +39,7 @@ def decode(decoded_lines, vehicle_db_file, input_file, query):
     # Read the input file decode it and save to a file
     print("Decoding started...")
     input = pyshark.FileCapture(input_file, keep_packets=False)
+    db = cantools.database.load_file(vehicle_db_file)
     while not input._eof_reached:
         try:
             packet = input.next()
