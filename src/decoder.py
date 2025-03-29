@@ -1,5 +1,7 @@
 import csv
 import re
+import sys
+
 import cantools
 import statistics
 
@@ -36,9 +38,25 @@ def convert_serializable(data):
 def decode(decoded_lines, vehicle_db_file, input_file, query):
     # Read the input file decode it and save to a file
     print("Decoding started...")
+    db = cantools.database.load_file(vehicle_db_file)
     with open(input_file, 'r') as input:
         reader = csv.reader(input, delimiter='\t')
-        db = cantools.database.load_file(vehicle_db_file)
+
+        errormsg = "ERROR: Input file does not appear to be a valid TSV file. Have you ran tshark to convert .pcapng to a .tsv?  Check that the input file contains the tshark fields time_epoch, can and data"
+        try:
+          first_line = next(reader, None)
+        except UnicodeError:
+            print(errormsg)
+            sys.exit(1)
+
+        if not first_line or len(first_line) < 3 or "ID: " not in first_line[1]:
+            print(errormsg)
+            sys.exit(1)
+
+        input.seek(0)
+        reader = csv.reader(input, delimiter='\t')
+
+
         for line in reader:
             timestamp = line[0]
             # TODO: is canID the right term? BO_ in .dbc

@@ -10,7 +10,7 @@ from decoder import *
 parser = argparse.ArgumentParser(description="CAN vehicle data decoder and analyser")
 
 required_group = parser.add_argument_group("Required arguments")
-required_group.add_argument("-i", "--inputfile", type=str, help="Name of the file that contains the data to be decoded")
+required_group.add_argument("-i", "--inputfile", type=str, help="Name of the file that contains the data in the specified .tsv format")
 required_group.add_argument("-d", "--dbcfile", type=str, help="Name of the file that is used to decode the inputfile(ends in .dbc)")
 optional_group = parser.add_argument_group("Optional arguments")
 optional_group.add_argument("-q", "--query", type=str, help="Which ECUs data would you like to query? example given: BRAKE", required=False)
