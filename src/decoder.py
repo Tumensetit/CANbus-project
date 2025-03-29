@@ -54,8 +54,8 @@ def decode(decoded_lines, vehicle_db_file, input_file, query):
         try:
             decoded_data = db.decode_message(canID, padded_data_bytes)
             message = db.get_message_by_frame_id(canID)
-
-            if query == None or message.name == query:
+            # TODO: query should be optional This assumes it's mandatory
+            if message.name == query:
                 decoded_line = generate_output(timestamp, message.name, decoded_data)
                 decoded_lines.append(decoded_line)
         except KeyError:
