@@ -1,8 +1,6 @@
 import csv
 import re
 import cantools
-import cantools.database
-import pyshark
 import statistics
 
 from diffpriv import diffpriv_stats
@@ -37,26 +35,25 @@ def convert_serializable(data):
 
 def decode(decoded_lines, vehicle_db_file, input_file, query):
     # Read the input file decode it and save to a file
-    input = pyshark.FileCapture(input_file, keep_packets=False)
-    db = cantools.database.load_file(vehicle_db_file)
-
     print("Decoding started...")
-    for packet in input:
-        timestamp = packet.sniff_timestamp
-        # TODO: is canID the right term? BO_ in .dbc
-        canID = int(packet.layers[0].get_field_value("id")) # canID needs to be an int for further processing
-        data = packet.layers[1].get_field_value("data")
-        padded_data_bytes = bytes.fromhex(data.zfill(16)) # pad to 8-byte value
-        # decode the message from the database
-        try:
-            decoded_data = db.decode_message(canID, padded_data_bytes)
-            message = db.get_message_by_frame_id(canID)
-
-            if query == None or message.name == query:
-                decoded_line = generate_output(timestamp, message.name, decoded_data)
-                decoded_lines.append(decoded_line)
-        except KeyError:
-            continue	# TODO: what do we do with the non found values?
+    with open(input_file, 'r') as input:
+        reader = csv.reader(input, delimiter='\t')
+        db = cantools.database.load_file(vehicle_db_file)
+        for line in reader:
+            timestamp = line[0]
+            # TODO: is canID the right term? BO_ in .dbc
+            canID = parse_canID(line[1]) # TODO: error handling
+            data = line[2]
+            padded_data_bytes = bytes.fromhex(data.zfill(16)) # pad to 8-byte value
+            # decode the message from the database
+            try:
+                decoded_data = db.decode_message(canID, padded_data_bytes)
+                message = db.get_message_by_frame_id(canID)
+                if query == None or message.name == query:
+                    decoded_line = generate_output(timestamp, message.name, decoded_data)
+                    decoded_lines.append(decoded_line)
+            except KeyError:
+                continue	# TODO: what do we do with the non found values?
     print("Decoding ready.")
 
 def show_stats(decoded_lines, diffpriv):
