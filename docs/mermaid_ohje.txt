@@ -7,11 +7,12 @@ Ilmaisversio löytyy: mermaidchart.com/play
 sequenceDiagram
     participant Car
     participant Decoder
+    participant Tshark
     participant FileSystem
     participant CAN_Database
     
-    Car->>Decoder: Lähtötietoina ajodata .pcapng -muodossa sekä ajoneuvon .dbc (Can database)
-    Decoder->>Decoder: Raakadatan purku, mäppäys dbc-tiedostoa vasten
+    Car->>Tshark: ajodata (.pcapng) konvertodaan taulukkomuotoon (.tsv)
+    Tshark->>Decoder: Konvertoidun raakatadan mäppäys ajoneuvokohtaista dbc-tiedostoa (Can Database) vasten
     Decoder->>FileSystem: Dekoodatun tiedon tallennus
     Decoder->>Decoder: Tilastojen laskeminen ja näyttäminen
 
@@ -20,4 +21,5 @@ sequenceDiagram
 
 #2 Käyttöliittymästä saa kuvan ulos vektorigrafiikkana: 
 export -> Image as svg
-#3 konvertoi svg kuvaksi vaikkapa macin sipsillä: sips -s input.svg --out output.png
+#3 konvertoi svg kuvaksi vaikkapa macin sipsillä: 
+% sips -s input.svg --out output.png
