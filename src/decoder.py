@@ -1,6 +1,7 @@
 import csv
 import re
 import sys
+import time
 
 import cantools
 import statistics
@@ -53,11 +54,18 @@ def decode(decoded_lines, vehicle_db_file, input_file, query):
             print(errormsg)
             sys.exit(1)
 
+        rows = sum(1 for row in reader) + 1
         input.seek(0)
         reader = csv.reader(input, delimiter='\t')
 
-
-        for line in reader:
+        handle_time = get_decode_time(first_line, db, decoded_lines, query)
+        estimate = float(handle_time * 10**-9 * rows) # Estimated time in seconds
+        print("Estimated decode time: %f seconds" %estimate)
+        i = 1
+        for x, line in enumerate(reader):
+            if x % int(rows*0.1) == 0:
+                print(f"{i*10}% done", end='\r')
+                i += 1
             timestamp = line[0]
             # TODO: is canID the right term? BO_ in .dbc
             canID = parse_canID(line[1]) # TODO: error handling
@@ -73,6 +81,25 @@ def decode(decoded_lines, vehicle_db_file, input_file, query):
             except KeyError:
                 continue	# TODO: what do we do with the non found values?
     print("Decoding ready.")
+
+def get_decode_time(line, db, decoded_lines, query) -> int:
+    start = time.perf_counter_ns()
+    timestamp = line[0]
+    canID = parse_canID(line[1])
+    data = line[2]
+    padded_data_bytes = bytes.fromhex(data.zfill(16)) # pad to 8-byte value
+    # decode the message from the database
+    try:
+        decoded_data = db.decode_message(canID, padded_data_bytes)
+        message = db.get_message_by_frame_id(canID)
+        if query == None or message.name == query:
+            decoded_line = generate_output(timestamp, message.name, decoded_data)
+            decoded_lines.append(decoded_line)
+    except KeyError:
+        print("Error while getting handle time")
+    end = time.perf_counter_ns()
+    handle_time = end - start
+    return handle_time #returns handle time in nanoseconds
 
 def show_stats(decoded_lines, diffpriv):
     print("Statistics: ")
