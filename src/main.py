@@ -15,7 +15,7 @@ required_group.add_argument("-d", "--dbcfile", type=str, help="Name of the file 
 
 optional_group = parser.add_argument_group("Optional arguments")
 optional_group.add_argument("--list-message-names", action='store_true', help="List all available message names in a dbc file", required=False)
-optional_group.add_argument("-q", "--query", type=str, help="Which ECUs data would you like to query? example given: BRAKE", required=False)
+optional_group.add_argument("-q", "--query", type=str, help="Filter result by ECU (message name). See --list-message-names.", required=False)
 optional_group.add_argument("--diffpriv", action='store_true', help="Print experimental diffpriv mean", required=False)
 
 
