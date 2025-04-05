@@ -47,7 +47,7 @@ if (list_message_nemes == True):
 decode(decoded_lines, db, input_file, query, vss)
 
 if len(decoded_lines) == 0:
-    print("No lines found.")
+    print("No messages found. If using --query, use --list-message-names to list message names available in the DBC file.")
     sys.exit()
 
 print("Saving the results")
