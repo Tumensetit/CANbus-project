@@ -12,9 +12,12 @@ parser = argparse.ArgumentParser(description="CAN vehicle data decoder and analy
 required_group = parser.add_argument_group("Required arguments")
 required_group.add_argument("-i", "--inputfile", type=str, help="Name of the file that contains the data in the specified .tsv format")
 required_group.add_argument("-d", "--dbcfile", type=str, help="Name of the file that is used to decode the inputfile(ends in .dbc)")
+
 optional_group = parser.add_argument_group("Optional arguments")
+optional_group.add_argument("--list-message-names", action='store_true', help="List all available message names in a dbc file", required=False)
 optional_group.add_argument("-q", "--query", type=str, help="Which ECUs data would you like to query? example given: BRAKE", required=False)
 optional_group.add_argument("--diffpriv", action='store_true', help="Print experimental diffpriv mean", required=False)
+
 
 args = parser.parse_args()
 
@@ -29,10 +32,16 @@ input_file = args.inputfile
 vehicle_db_file = args.dbcfile
 query = args.query
 diffpriv = args.diffpriv
+list_message_nemes = args.list_message_names
 
 decoded_lines = []
 print("Reading DBC file...")
 db = cantools.database.load_file(vehicle_db_file)
+
+if (list_message_nemes == True):
+    print_dbc_message_names(db)
+    sys.exit(0)
+
 decode(decoded_lines, db, input_file, query)
 
 if len(decoded_lines) == 0:

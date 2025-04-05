@@ -133,3 +133,8 @@ def show_stats(decoded_lines, diffpriv):
             diffpriv_stats(key, values)
 
 
+
+def print_dbc_message_names(db):
+    print("Available message names in the .dbc file. These can be passed to --query:")
+    for message in db.messages:
+        print(message.name)
