@@ -62,41 +62,40 @@ def decode(decoded_lines, db, input_file, query, vss):
 
         handle_time = get_decode_time(first_line, db, decoded_lines, query, vss)
         estimate = float(handle_time * 10**-9 * rows) # Estimated time in seconds
-        print("Estimated decode time: %f seconds" %estimate)
+        print("Estimated decode time: %.0f seconds" %estimate, end='\r')
         i = 1
         for x, line in enumerate(reader):
             if x % int(rows*0.1) == 0:
-                print(f"{i*10}% done", end='\r')
+                handle_time = get_decode_time(first_line, db, decoded_lines, query, vss)
+                estimate = float(handle_time * 10**-9 * (rows - x)) # Estimated time in seconds
+                print(f"{i*10}% done, Estimated decode time: {estimate:4.0f} seconds", end='\r') #HOX! Shows only 4 digits of the estimated seconds
                 i += 1
-            timestamp = line[0]
-            # TODO: is canID the right term? BO_ in .dbc
-            canID = parse_canID(line[1]) # TODO: error handling
-            data = line[2]
-            padded_data_bytes = bytes.fromhex(data.zfill(16)) # pad to 8-byte value
-            # decode the message from the database
-            try:
-                decoded_data = db.decode_message(canID, padded_data_bytes)
-                message = db.get_message_by_frame_id(canID)
-                if query == None or message.name == query:
-                    decoded_line = generate_output(timestamp, message.name, decoded_data, vss)
-                    decoded_lines.append(decoded_line)
-            except KeyError:
-                continue	# TODO: what do we do with the non found values?
+            else:
+                try:
+                    decode_func(decoded_lines, line, db, query, vss)
+                except KeyError:
+                    continue	# TODO: what do we do with the non found values?
+    print() #creates newline for next print
     print("Decoding ready.")
 
-def get_decode_time(line, db, decoded_lines, query, vss) -> int:
-    start = time.perf_counter_ns()
+def decode_func(decoded_lines, line, db, query, vss):
     timestamp = line[0]
-    canID = parse_canID(line[1])
+    # TODO: is canID the right term? BO_ in .dbc
+    canID = parse_canID(line[1]) # TODO: error handling
     data = line[2]
     padded_data_bytes = bytes.fromhex(data.zfill(16)) # pad to 8-byte value
     # decode the message from the database
+    decoded_data = db.decode_message(canID, padded_data_bytes)
+    message = db.get_message_by_frame_id(canID)
+    if query == None or message.name == query:
+        decoded_line = generate_output(timestamp, message.name, decoded_data, vss)
+        decoded_lines.append(decoded_line)
+
+def get_decode_time(line, db, decoded_lines, query, vss) -> int:
+    start = time.perf_counter_ns()
+    # decode the message from the database
     try:
-        decoded_data = db.decode_message(canID, padded_data_bytes)
-        message = db.get_message_by_frame_id(canID)
-        if query == None or message.name == query:
-            decoded_line = generate_output(timestamp, message.name, decoded_data, vss)
-            decoded_lines.append(decoded_line)
+        decode_func(decoded_lines, line, db, query, vss)
     except KeyError:
         print("Error while getting handle time")
     end = time.perf_counter_ns()
