@@ -30,9 +30,10 @@ vehicle_db_file = args.dbcfile
 query = args.query
 diffpriv = args.diffpriv
 
-
 decoded_lines = []
-decode(decoded_lines, vehicle_db_file, input_file, query)
+print("Reading DBC file...")
+db = cantools.database.load_file(vehicle_db_file)
+decode(decoded_lines, db, input_file, query)
 
 if len(decoded_lines) == 0:
     print("No lines found.")

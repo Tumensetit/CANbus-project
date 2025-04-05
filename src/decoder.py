@@ -36,10 +36,9 @@ def convert_serializable(data):
     else:
         return str(data)
 
-def decode(decoded_lines, vehicle_db_file, input_file, query):
+def decode(decoded_lines, db, input_file, query):
     # Read the input file decode it and save to a file
     print("Decoding started...")
-    db = cantools.database.load_file(vehicle_db_file)
     with open(input_file, 'r') as input:
         reader = csv.reader(input, delimiter='\t')
 
