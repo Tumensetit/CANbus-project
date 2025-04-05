@@ -77,6 +77,16 @@ Muunnos on toteutettu käsin tehdyllä mäppäyksellä, joka ylikirjoittaa DBC-s
 
 Mäppäystalukon arvot ovat valistuneita arvauksia. Taulukko on puutteellinen.
 
+Mäppäyksen parantaminen vaatisi DBC-tiedoston parempaa tuntemista ja mahdollisia yksittäisten signaalinen konversioita.
+
+Esimerkkiksi Chassis.Chassis.Brake.PedalPosition sisältää arvon prosenteissa välillä 0-100. 
+DBC-tiedostossa oleva BRAKE.BRAKE_PEDAL sisältää arvon välillä 0-255.
+
+BRAKE_PEDAL -arvo saattaa olla suoraan muunnettavissa prosenteiksi, mutta arvo toi ECU:sta riippuen tarkoittaa myös jotain muuta.
+
+
+
+
 Jatkokehitystarve: DBC-formaatissa on message name ("BO_") ja signaali ("SG_"). Mäppäys tehdään nyt ainoastaan signaalin perusteella. Esimerkkinä käytetyssä DBC-tiedostossa on muutamia signaaleita, jotka ovat käytössä useammassa viestissä.
 
 
