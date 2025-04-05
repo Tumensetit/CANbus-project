@@ -17,6 +17,7 @@ optional_group = parser.add_argument_group("Optional arguments")
 optional_group.add_argument("--list-message-names", action='store_true', help="List all available message names in a dbc file", required=False)
 optional_group.add_argument("-q", "--query", type=str, help="Filter result by ECU (message name). See --list-message-names.", required=False)
 optional_group.add_argument("--diffpriv", action='store_true', help="Print experimental diffpriv mean", required=False)
+optional_group.add_argument("--vss", action='store_true', help="Experimental: map DBC signals to VSS paths", required=False)
 
 
 args = parser.parse_args()
@@ -33,6 +34,7 @@ vehicle_db_file = args.dbcfile
 query = args.query
 diffpriv = args.diffpriv
 list_message_nemes = args.list_message_names
+vss = args.vss
 
 decoded_lines = []
 print("Reading DBC file...")
@@ -42,7 +44,7 @@ if (list_message_nemes == True):
     print_dbc_message_names(db)
     sys.exit(0)
 
-decode(decoded_lines, db, input_file, query)
+decode(decoded_lines, db, input_file, query, vss)
 
 if len(decoded_lines) == 0:
     print("No lines found.")

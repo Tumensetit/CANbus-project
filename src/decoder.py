@@ -6,6 +6,7 @@ import time
 import cantools
 import statistics
 
+from vss import convertDataToVss
 from diffpriv import diffpriv_stats
 
 
@@ -17,11 +18,13 @@ def parse_canID(text):
         return int(match.group(1))
     return None
 
-def generate_output(timestamp, canID, data): # TODO: replace canID with decoded value
+def generate_output(timestamp, canID, data, vss): # TODO: replace canID with decoded value
+    converted_data = convert_serializable(convertDataToVss(data) if vss else data)
+
     output_json = {
         "unix_epoch": timestamp,
         "CanID": canID,
-        "signal": convert_serializable(data)
+        "signal": converted_data
     }
 
     return output_json
@@ -36,7 +39,7 @@ def convert_serializable(data):
     else:
         return str(data)
 
-def decode(decoded_lines, db, input_file, query):
+def decode(decoded_lines, db, input_file, query, vss):
     # Read the input file decode it and save to a file
     print("Decoding started...")
     with open(input_file, 'r') as input:
@@ -57,7 +60,7 @@ def decode(decoded_lines, db, input_file, query):
         input.seek(0)
         reader = csv.reader(input, delimiter='\t')
 
-        handle_time = get_decode_time(first_line, db, decoded_lines, query)
+        handle_time = get_decode_time(first_line, db, decoded_lines, query, vss)
         estimate = float(handle_time * 10**-9 * rows) # Estimated time in seconds
         print("Estimated decode time: %f seconds" %estimate)
         i = 1
@@ -75,13 +78,13 @@ def decode(decoded_lines, db, input_file, query):
                 decoded_data = db.decode_message(canID, padded_data_bytes)
                 message = db.get_message_by_frame_id(canID)
                 if query == None or message.name == query:
-                    decoded_line = generate_output(timestamp, message.name, decoded_data)
+                    decoded_line = generate_output(timestamp, message.name, decoded_data, vss)
                     decoded_lines.append(decoded_line)
             except KeyError:
                 continue	# TODO: what do we do with the non found values?
     print("Decoding ready.")
 
-def get_decode_time(line, db, decoded_lines, query) -> int:
+def get_decode_time(line, db, decoded_lines, query, vss) -> int:
     start = time.perf_counter_ns()
     timestamp = line[0]
     canID = parse_canID(line[1])
@@ -92,7 +95,7 @@ def get_decode_time(line, db, decoded_lines, query) -> int:
         decoded_data = db.decode_message(canID, padded_data_bytes)
         message = db.get_message_by_frame_id(canID)
         if query == None or message.name == query:
-            decoded_line = generate_output(timestamp, message.name, decoded_data)
+            decoded_line = generate_output(timestamp, message.name, decoded_data, vss)
             decoded_lines.append(decoded_line)
     except KeyError:
         print("Error while getting handle time")
