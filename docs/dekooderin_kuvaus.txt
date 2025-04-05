@@ -67,4 +67,18 @@ https://www.csselectronics.com/pages/can-dbc-file-database-intro
 
 ## tallennus ja tilastointi
 
--> tähän tarkempaa kuvausta
+
+### VSS -konversio
+valitsimella --vss tehdään signaaleille konversio DBC-muodosta VSS-muotoon.
+
+VSS:n mukaisia tietoja ei voi suoraan päivittää DBC-tiedostoon, koska DBC-formaatti ei tue pisteitä signaalien mimissä.
+
+Muunnos on toteutettu käsin tehdyllä mäppäyksellä, joka ylikirjoittaa DBC-signaalin nimen VSS:n mukaisella nimellä.
+
+Mäppäystalukon arvot ovat valistuneita arvauksia. Taulukko on puutteellinen.
+
+Jatkokehitystarve: DBC-formaatissa on message name ("BO_") ja signaali ("SG_"). Mäppäys tehdään nyt ainoastaan signaalin perusteella. Esimerkkinä käytetyssä DBC-tiedostossa on muutamia signaaleita, jotka ovat käytössä useammassa viestissä.
+
+
+Lisätietoa:
+https://github.com/COVESA/vehicle_signal_specification
