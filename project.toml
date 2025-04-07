@@ -6,4 +6,4 @@ build-backend = "setuptools.build_meta"
 name = "CANBus"
 version = "0.1.0"
 description = "A python tool for analysing vehicle CAN data"
-dependencies = ["cantools", "diffprivlib", "matplotlib", "pandas"]
+dependencies = ["cantools", "diffprivlib"]
