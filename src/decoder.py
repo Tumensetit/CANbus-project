@@ -140,3 +140,29 @@ def print_dbc_message_names(db):
     print("Available message names in the .dbc file. These can be passed to --query:")
     for message in db.messages:
         print(message.name)
+
+
+
+
+def save_as_csv(decoded_lines, csv_file):
+    if not decoded_lines:
+        print("No decoded lines to save.")
+        return
+    
+    headers = ["unix_epoch", "CanID"]
+    # Makes sure to get all unique signals and preserve order
+    signals = decoded_lines[0]["signal"].keys()
+    headers.extend(signals)
+
+    with open(csv_file, 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=headers)
+        writer.writeheader()
+
+        for entry in decoded_lines:
+            row = {"unix_epoch": entry["unix_epoch"], "CanID": entry["CanID"]}
+            # Makes sure to write signals in the order of headers
+            for signal in headers[2:]:  # Skipping "unix_epoch" and "CanID"
+                row[signal] = entry["signal"].get(signal, None)
+            writer.writerow(row)
+    
+    print(f"CSV file saved to {csv_file}")

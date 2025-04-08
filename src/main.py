@@ -18,6 +18,7 @@ optional_group.add_argument("--list-message-names", action='store_true', help="L
 optional_group.add_argument("-q", "--query", type=str, help="Filter result by ECU (message name). See --list-message-names.", required=False)
 optional_group.add_argument("--diffpriv", action='store_true', help="Print experimental diffpriv mean", required=False)
 optional_group.add_argument("--vss", action='store_true', help="Experimental: map DBC signals to VSS paths", required=False)
+optional_group.add_argument("-o", "--outputfile", type=str, help="Output file for saving decoded data (default: decoder_output.json)", default="decoder_output")
 
 
 args = parser.parse_args()
@@ -33,6 +34,7 @@ input_file = args.inputfile
 vehicle_db_file = args.dbcfile
 query = args.query
 diffpriv = args.diffpriv
+output_file = args.outputfile
 list_message_nemes = args.list_message_names
 vss = args.vss
 
@@ -51,9 +53,24 @@ if len(decoded_lines) == 0:
     sys.exit()
 
 print("Saving the results")
-# Save the output to a file
-with open('decoder_output.txt', 'a') as outputfile:
+
+if not output_file.endswith(".json"):
+    output_file += ".json"
+
+with open(output_file, 'w') as outputfile:
     json.dump(decoded_lines, outputfile, indent=2)
+
+print(f"Decoder output file created: {output_file}")
+
+
+if query:
+    csv_file = output_file.replace(".json", ".csv")
+    print(f"Preparing to save CSV file: {csv_file}")
+    save_as_csv(decoded_lines, csv_file)
+else:
+    print("CSV file not saved: --query must be specified to export CSV format.")
+
+
 
 print("Decoder output file created")
 show_stats(decoded_lines, diffpriv)
