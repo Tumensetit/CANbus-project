@@ -1,3 +1,5 @@
+Tämä tiedosto on sekalaista tajunnanvirtaa ja muistiinpanoja. Työstö tehdään nyt tiedostossa loppuraportti.txt
+
 dokumentoi:
 # koodin vaiheet:
 ## yleiskuvaus
