@@ -122,7 +122,7 @@ def show_stats(decoded_lines, diffpriv):
             if isinstance(value, (int, float)):
                 data[combined_key].append(value)
             else:
-                print(f"Non-numerical value \"{value}\" for {combined_key}, cannot calculate standard deviation")
+                continue
 
     for key, values in data.items():
         if len(values) > 1:  # Avoid statistics error for single-value lists
