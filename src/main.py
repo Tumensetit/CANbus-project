@@ -2,8 +2,8 @@ import argparse
 import json
 import sys
 
-
 from decoder import *
+from stats import *
 
 def create_arguments():
     parser = argparse.ArgumentParser(description="CAN vehicle data decoder and analyser")

@@ -1,0 +1,11 @@
+README.txt
+pyproject.toml
+src/decoder.py
+src/diffpriv.py
+src/main.py
+src/vss.py
+src/CANBus.egg-info/PKG-INFO
+src/CANBus.egg-info/SOURCES.txt
+src/CANBus.egg-info/dependency_links.txt
+src/CANBus.egg-info/requires.txt
+src/CANBus.egg-info/top_level.txt
