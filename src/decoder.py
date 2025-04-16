@@ -128,6 +128,7 @@ def show_stats(decoded_lines, diffpriv):
 
     print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(nonfloat_keys)))
 
+    print("Standard deviations (defaults to 0.0 if only one value exists:")
     for key, values in data.items():
         if len(values) > 1:  # Avoid statistics error for single-value lists
             stddev = statistics.stdev(values)
