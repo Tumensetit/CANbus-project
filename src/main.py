@@ -5,21 +5,24 @@ import sys
 
 from decoder import *
 
+def create_arguments():
+    parser = argparse.ArgumentParser(description="CAN vehicle data decoder and analyser")
+
+    required_group = parser.add_argument_group("Required arguments")
+    required_group.add_argument("-i", "--inputfile", type=str, help="Name of the file that contains the data in the specified .tsv format", required=True)
+    required_group.add_argument("-d", "--dbcfile", type=str, help="Name of the file that is used to decode the inputfile(ends in .dbc)", required=True)
+
+    optional_group = parser.add_argument_group("Optional arguments")
+    optional_group.add_argument("--list-message-names", action='store_true', help="List all available message names in a dbc file", required=False)
+    optional_group.add_argument("-q", "--query", type=str, help="Filter result by ECU (message name). See --list-message-names.", required=False)
+    optional_group.add_argument("--diffpriv", action='store_true', help="Print experimental diffpriv mean", required=False)
+    optional_group.add_argument("--vss", action='store_true', help="Experimental: map DBC signals to VSS paths", required=False)
+
+    return parser.parse_args()
 
 
-parser = argparse.ArgumentParser(description="CAN vehicle data decoder and analyser")
 
-required_group = parser.add_argument_group("Required arguments")
-required_group.add_argument("-i", "--inputfile", type=str, help="Name of the file that contains the data in the specified .tsv format", required=True)
-required_group.add_argument("-d", "--dbcfile", type=str, help="Name of the file that is used to decode the inputfile(ends in .dbc)", required=True)
-
-optional_group = parser.add_argument_group("Optional arguments")
-optional_group.add_argument("--list-message-names", action='store_true', help="List all available message names in a dbc file", required=False)
-optional_group.add_argument("-q", "--query", type=str, help="Filter result by ECU (message name). See --list-message-names.", required=False)
-optional_group.add_argument("--diffpriv", action='store_true', help="Print experimental diffpriv mean", required=False)
-optional_group.add_argument("--vss", action='store_true', help="Experimental: map DBC signals to VSS paths", required=False)
-
-args = parser.parse_args()
+args = create_arguments()
 
 # Get file names from command line arguments
 input_file = args.inputfile
