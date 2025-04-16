@@ -16,3 +16,10 @@ Esimerkki (linux/mac):
 ./src/raakadata_konversio.sh src/dump100000.pcapng <datatiedosto.tsv>
 ## Dekoodaa
 canbusdecoder -i <datatiedosto.tsv> -d data/toyota_rav4_hybrid_2017_pt_generated.dbc -Q BREAK --diffpriv
+
+
+## Testien ajo:
+
+Mene /canbus5/CANbus-project/src/canbusdecoder
+
+aja testit komentorivillä  python -m unittest test_code.py

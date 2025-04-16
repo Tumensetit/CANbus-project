@@ -89,6 +89,9 @@ def decode_func(decoded_lines, line, db, query, vss):
         decoded_line = generate_output(timestamp, message.name, decoded_data, vss)
         decoded_lines.append(decoded_line)
 
+
+
+
 def get_decode_time(line, db, decoded_lines, query, vss) -> int:
     start = time.perf_counter_ns()
     # decode the message from the database
