@@ -1,4 +1,0 @@
-decoder
-diffpriv
-main
-vss

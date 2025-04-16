@@ -1,4 +1,0 @@
-cantools
-diffprivlib
-matplotlib
-pandas

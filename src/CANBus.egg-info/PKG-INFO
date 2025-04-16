@@ -1,8 +1,0 @@
-Metadata-Version: 2.4
-Name: CANBus
-Version: 0.1.0
-Summary: A python tool for analysing vehicle CAN data
-Requires-Dist: cantools
-Requires-Dist: diffprivlib
-Requires-Dist: matplotlib
-Requires-Dist: pandas
