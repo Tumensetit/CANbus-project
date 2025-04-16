@@ -112,6 +112,7 @@ def show_stats(decoded_lines, diffpriv):
     print("signals/sec: " + str(len(decoded_lines)/duration))
 
     data = {}
+    nonfloat_keys = set()
 
     for entry in decoded_lines:
         can_id = entry['CanID']
@@ -122,7 +123,10 @@ def show_stats(decoded_lines, diffpriv):
             if isinstance(value, (int, float)):
                 data[combined_key].append(value)
             else:
+                nonfloat_keys.add(combined_key)
                 continue
+
+    print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(nonfloat_keys)))
 
     for key, values in data.items():
         if len(values) > 1:  # Avoid statistics error for single-value lists
