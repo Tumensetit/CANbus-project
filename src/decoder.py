@@ -117,7 +117,7 @@ def show_stats(decoded_lines, diffpriv):
     for entry in decoded_lines:
         can_id = entry['CanID']
         for key, value in entry['signal'].items():
-            combined_key = f"{can_id}.{key}"
+            combined_key = f"{can_id}/{key}"
             if combined_key not in data:
                 data[combined_key] = []
             if isinstance(value, (int, float)):
