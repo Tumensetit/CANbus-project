@@ -17,7 +17,7 @@ def create_arguments():
     optional_group.add_argument("-q", "--query", type=str, help="Filter result by ECU (message name). See --list-message-names.", required=False)
     optional_group.add_argument("--diffpriv", action='store_true', help="Print experimental diffpriv mean", required=False)
     optional_group.add_argument("--vss", action='store_true', help="Experimental: map DBC signals to VSS paths", required=False)
-    optional_group.add_argument("-o", "--outputfile", type=str, help="Output file for saving decoded data (default: decoder_output.txt)", default="decoder_output.txt")
+    optional_group.add_argument("-o", "--outputfile", type=str, help="Output file for saving decoded data (default: decoder_output.json)", default="decoder_output.json")
     return parser.parse_args()
 
 
