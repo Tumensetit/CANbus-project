@@ -18,8 +18,6 @@ Esimerkki (linux/mac):
 canbusdecoder -i <datatiedosto.tsv> -d data/toyota_rav4_hybrid_2017_pt_generated.dbc -Q BREAK --diffpriv
 
 
-## Testien ajo:
+## Automaattitestien ajo:
 
-Mene /canbus5/CANbus-project/src/canbusdecoder
-
-aja testit komentorivillä  python -m unittest test_code.py
+% pytest

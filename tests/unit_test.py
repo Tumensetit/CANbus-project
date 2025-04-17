@@ -1,13 +1,7 @@
 import unittest
 from unittest.mock import patch
-
-
-
-
-
-
-from stats import show_stats
-from decoder import parse_canID, convert_serializable, generate_output, decode
+from canbusdecoder.stats import show_stats
+from canbusdecoder.decoder import parse_canID, convert_serializable, generate_output, decode
 
 
 

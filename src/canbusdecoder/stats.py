@@ -1,7 +1,7 @@
 import csv
 import statistics
 
-from diffpriv import diffpriv_stats
+from canbusdecoder.diffpriv import diffpriv_stats
 
 
 

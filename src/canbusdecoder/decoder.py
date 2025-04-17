@@ -5,7 +5,7 @@ import time
 
 import cantools
 
-from vss import convertDataToVss
+from canbusdecoder.vss import convertDataToVss
 
 
 
