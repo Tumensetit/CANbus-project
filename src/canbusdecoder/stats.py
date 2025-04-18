@@ -34,10 +34,10 @@ def show_stats(decoded_lines, diffpriv, csv_output_file=None):
             if isinstance(value, (int, float)):
                 data[combined_key].append(value)
             else:
-                nonfloat_keys.add(combined_key)
+                non_float_keys.add(combined_key)
                 continue
 
-    print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(nonfloat_keys)))
+    print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(non_float_keys)))
     
     for key, values in data.items():
         stddev = statistics.stdev(values) if len(values) > 1 else 0.0
