@@ -4,12 +4,26 @@ Ohjelma tallentaa dekoodauksen tuloksen json-formaatissa, ja tulostaa tilastot n
 
 Tarvittavien python kirjastojen asentaminen:
 Navigoi CMD:ssä projektin kansioon, polun pitäisi näyttää kutakuinkin tältä: C:\CANbus\CANbus-project>
-suorita seuraava komento:
+Python paketin asentamiseksi suorita seuraavat komentot:
 % pip install -r requirements.txt
 % pip install .
 
 Käyttöohje löytyy ohjelmasta:
 % canbusdecoder --help
+
+Argumenttien selitykset (help-komennon tuloste):
+  -h, --help                  >  show this help message and exit
+
+Required arguments:
+  -i, --inputfile INPUTFILE   >  Name of the file that contains the data in the specified .tsv format
+  -d, --dbcfile DBCFILE       >  Name of the file that is used to decode the inputfile(ends in .dbc)
+
+Optional arguments:
+  --list-message-names        >  List all available message names in a dbc file (requires dbcfile file)
+  -q, --query QUERY           >  Filter result by ECU (message name). See --list-message-names.
+  --diffpriv                  >  Print experimental diffpriv mean
+  --vss                       >  Experimental: map DBC signals to VSS paths
+  -o, --outputfile OUTPUTFILE >  Output file for saving decoded data (default: decoder_output.json)
 
 Esimerkki (linux/mac):
 ## Muuta raakadata ohjelman ymmärtämään muotoon:
@@ -17,6 +31,8 @@ Esimerkki (linux/mac):
 ## Dekoodaa
 % canbusdecoder -i <datatiedosto.tsv> -d data/toyota_rav4_hybrid_2017_pt_generated.dbc -Q BREAK --diffpriv
 
+Tällä hetkellä stats.py ei toimi kunnolla jos unix_epoch ei muutu tarpeeksi datatiedoston sisällä.
+Jos raakadata_konversio.sh ajon kanssa ongelmia > katso docs\tshark_konversio_ohje_windows.txt
 
 ## Automaattitestien ajo:
 
