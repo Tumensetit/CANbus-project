@@ -39,7 +39,7 @@ def show_stats(decoded_lines, diffpriv, csv_output_file=None):
 
     print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(nonfloat_keys)))
     
-for key, values in data.items():
+    for key, values in data.items():
         stddev = statistics.stdev(values) if len(values) > 1 else 0.0
         print(f"{key}: {stddev:.6f}")
         if csv_output_file:
