@@ -14,7 +14,7 @@ def show_stats(decoded_lines, diffpriv, csv_output_file=None):
     duration = last - first
     print("time between first and last signal: " + str(duration) + "s")
     print("signals/sec: " + str(len(decoded_lines) / duration))
-    non_float_keys = []
+    non_float_keys = set()
 
     csv_data = []
     if csv_output_file:
