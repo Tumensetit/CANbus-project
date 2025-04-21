@@ -1,67 +1,5 @@
 Tämä tiedosto on sekalaista tajunnanvirtaa ja muistiinpanoja. Työstö tehdään nyt tiedostossa loppuraportti.txt
 
-dokumentoi:
-# koodin vaiheet:
-## yleiskuvaus
-
-raakadatan purku -> dekoodaus -> tallennus/tilastointi
-
-TODO: mermaidilla tehty sekvenssikaavio ja sen selitys tähän
-
-## raakadatan purku
-
-Huom.: Tämä tieto raakadatan formaatista koskee projektissa käytettyä esimerkkitiedostoa  can_dump.pcapng (md5sum 5816a743c69c602b28c3645ccf1493a0)
-
-Raakadatasta löytyy kaksi olennaista tietoa, .canId ja .data. Näistä canId kertoo, mikä ECU on kyseessä, ja data sisältää varsinaisen datan.
-Varsinaisen datan lisäksi .pcapng -paketit sisältävät paketinkaappaukseen liittyvää metadataa. Näistä yksi olennaisimmista on paketin kaappauksen päivämäärä- ja kellonaikatiedot. Ne löytyvät sekä ihmisen luettavassa että koneluettavassa muodossa. Jatkokäsittelyä varten koneluettava unix epoch on projektin kannalta hyödyllisempi.
-
-
-Raakadataa voi käsitellä sim. wiresharkilla tai tsharkilla. Pythonilla voi käyttää vaikkapa pyshark-kirjastoa. Kokeilimme molempia vaihtoehtoa, ja totesimme tsharkin olevan noin 10x nopeampi. Suuremmilla datamäärillä nopeusero on tshark-toteutuksen eduksi merkittävä. Tshark-toteutuksen haittapuolia tunnistettiin kaksi:
-1. windowsille ja linuxille jouduttiin tekemään hieman erilaiset komennot ja tsharkin asennusohjeet
-2. Joudutaan tekemään väliaikainen .tsv-tiedosto, joka vie levytilaa. Toisaalta väliaikaisen tiedoston etuna on, että raakadatan purku voidaan tehdä kerran, ja sitä voidaan hyödyntää tulevilla ajokerroilla. Näin useamman analyysin teko samasta aineistosta nopeutuu.
-
-
-### Nopeustestin tulokset
-Pyshark-toteutus:
-    time python3 src/main.py -i src/dump100000.pcapng <...> 17.77s user 0.90s system 103% cpu 18.049 total
-    
-    tshark + tsv:
-    time ./src/raakadata_konversio.sh src/dump100000.pcapng konvertoitu_100000.tsv  0.56s user 0.07s system 97% cpu 0.648 total
-    time python3 src/main.py -i konvertoitu_100000.tsv -d <...>  0.91s user 0.12s system 98% cpu 1.050 totali
-
-
-Raakadatan purkamisen lopputuloksena syntyy .tsv tässä formaatissa:
-timestamp (unix epoc)	CanID								Data
-1736342840.295986390    Controller Area Network, Ext. ID: 166 (0x000000a6), Length: 8   00000040000000ee
-
-### Raakadatan filtteröinti
-Yhtenä tutkimuskysymyksenä oli, voidaanko raakadataa filtteröidä. Tutkimuksemme perusteella datan tuottamisvaiheessa se on hankalaa. Tshark käyttää syötteenä kaapattuja paketteja. Jos tämä olisi internet-liikennettä, metatiedoista löytyisi esimerkiksi käytetty protokolla, kohde- ja lähdeosoitteet. Näiden perusteella voitaisiin toteuttaa filtteröintiä.
-
-Meidän käyttötapauksessamme ainoa filtteröinnin perusteella käytettävä tieto on CanID-numero. Sitä ei onnistuttu filtteröimään suoraan tsharkilla. Filtteröinti olisi yksinkertaista tehdä esim. linux grepillä. Kuitenkin huomattiin, että CanID ei ole ihmisen ymmärtämässä muodossa ennen dekoodausvaihetta, jolloin se mäpätään .dbc -tiedostossa olevaan signaaliin. Näin ollen filtteröinti voidaan tehdä dekoodausvaiheessa.
-
-Jatkokehitysideana filtterityökalu, joka hakee ID:n .dbc -tiedostosta nimen perusteella ja filtteröi konvertoitua raakadataa. Näin saadaan vähennettyä raakadatatiedoston kokoa. Nopeasti toteutettu kokeilu näyttää toimivan, mutta poikkeustapausten käsittelyä ei ole mietitty:
- % export KEY=BRAKE                                       
-% export KEY2BO=$(grep BO_ data/toyota_rav4_hybrid_2017_pt_generated.dbc| grep " ${KEY}:" | cut -d ' ' -f 2)
-% grep "ID: ${KEY2BO}" konvertoitu_raakadata.tsv > filtteröity_raakadata.tsv
-
-
-
-Lisätietoa:
-https://wiki.wireshark.org/Development/PcapNg
-https://pypi.org/project/pyshark/
-https://github.com/KimiNewt/pyshark/issues/357
-
-## dekoodaus
-
-Raakadata konvertoidaan ymmärrettäväksi informaatioksi dekoodaamalla se mallikohtaista .dbc -tiedostoa vasten.
-
-Pythonin cantools-kirjasto dekoodaa raakadatan .canId -kentästä ECU:n nimen, ja .data -kentästä signaalin osat.
-
-Lisätietoa:
-https://github.com/commaai/opendbc
-https://pypi.org/project/cantools/
-https://www.csselectronics.com/pages/can-dbc-file-database-intro
-
 
 ## Lopputuotos: json
 
@@ -70,27 +8,3 @@ https://www.csselectronics.com/pages/can-dbc-file-database-intro
 ## tallennus ja tilastointi
 
 
-### VSS -konversio
-valitsimella --vss tehdään signaaleille konversio DBC-muodosta VSS-muotoon.
-
-VSS:n mukaisia tietoja ei voi suoraan päivittää DBC-tiedostoon, koska DBC-formaatti ei tue pisteitä signaalien mimissä.
-
-Muunnos on toteutettu käsin tehdyllä mäppäyksellä, joka ylikirjoittaa DBC-signaalin nimen VSS:n mukaisella nimellä.
-
-Mäppäystalukon arvot ovat valistuneita arvauksia. Taulukko on puutteellinen.
-
-Mäppäyksen parantaminen vaatisi DBC-tiedoston parempaa tuntemista ja mahdollisia yksittäisten signaalinen konversioita.
-
-Esimerkkiksi Chassis.Chassis.Brake.PedalPosition sisältää arvon prosenteissa välillä 0-100. 
-DBC-tiedostossa oleva BRAKE.BRAKE_PEDAL sisältää arvon välillä 0-255.
-
-BRAKE_PEDAL -arvo saattaa olla suoraan muunnettavissa prosenteiksi, mutta arvo toi ECU:sta riippuen tarkoittaa myös jotain muuta.
-
-
-
-
-Jatkokehitystarve: DBC-formaatissa on message name ("BO_") ja signaali ("SG_"). Mäppäys tehdään nyt ainoastaan signaalin perusteella. Esimerkkinä käytetyssä DBC-tiedostossa on muutamia signaaleita, jotka ovat käytössä useammassa viestissä.
-
-
-Lisätietoa:
-https://github.com/COVESA/vehicle_signal_specification
