@@ -51,11 +51,6 @@ Ensimmäinen versio toteutuksesta noudatti pipeline-arkkitehtuuria; meillä oli 
 
 Projektia toteuttaessa ei pohdittu toteutuksen resurssinkäyttöä. Käytössä ollut esimerkkitiedosto kääntyi kehittäjien koneilla muutamissa minuuteissa. Voi olla, että isommat data-aineistot aiheuttavat toteutuksessa ongelmia esimerkiksi muistinkäytössä. Tällöin ohjelmaa on optimoitava.
 
-### windows- ja linux-skriptien ylläpitämisen vaikeus
-#### tshark vs pyshark
-## visualisointi
-### DBC
-
 ### VSS
 Yhtenä tehtävänä oli tutustua VSS-syntaksiin. Toteutimme mvp-tyylisen ominaisuuden. Dekooderin valitsimella --vss tehdään signaaleille konversio DBC-muodosta VSS-muotoon.
 
@@ -74,7 +69,11 @@ https://github.com/COVESA/vehicle_signal_specification
 
 
 ### Diffpriv
-## Jatkokehitysideoita
+Yhtenä tehtävänä oli tutkia diffpriv -menetelmiä. Toteutimme valitsimen --diffpriv, jolla lasketaan mediaaneja diffpriv-menetelmällä. 
+
+Tarkempi raportti on tehty erillisessä repossa: https://github.com/jaacoppi/canbusdp
+
+## Sekalaisia jatkokehitysideoita
 - DBC-tiedosto on kaiken dekoodauksen avain; sen tarkempi ymmärtäminen on välttämätöntä tulosten verifioimiseksi
 - Työkalun käyttö oikealla datalla ja oikeilla käyttötapauksilla, ja sitä kautta kehityskohteiden listaus (ainakin suorituksen optimointi ja tutkijoiden workflow:n ymmärtäminen)
 - erillinen tshark-konversioskripti voitaisiin toteuttaa käyttäen pythonin subprocess -komentoa. Näin työkalusta saataisiin käyttöliittymältään yhtenäisempi. Toteutuksessa tulee huomioida käyttöjärjestelmäkohtaiset erot.
