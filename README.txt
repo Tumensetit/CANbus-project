@@ -37,3 +37,14 @@ Jos raakadata_konversio.sh ajon kanssa ongelmia > katso docs\tshark_konversio_oh
 ## Automaattitestien ajo:
 
 % pytest
+
+## Suoritettu demo
+1. Raakadata tiedoston lataus
+2. Gitrepon lataus
+3. CMD:ssä root kansiossa pip install -r requirements.txt ja pip install .
+4. Raakadatan purku data kansioon
+5. Tshark konversio windows ohjeilla
+6. CMD:ssä root kansiossa canbusdecoder -i <datatiedosto.tsv> -d data/toyota_rav4_hybrid_2017_pt_generated.dbc
+7. Törmäsimme ongelmiin, jotka korjasimme, jonka jälkeen päivitettiin gitrepo ja asennettiin 
+   uudelleen käyttäen pip uninstall canbusdecoder ja pip install .
+8. Sitten canbusdecoder komento uudelleen: canbusdecoder -i <datatiedosto.tsv> -d data/toyota_rav4_hybrid_2017_pt_generated.dbc
