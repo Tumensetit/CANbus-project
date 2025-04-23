@@ -52,6 +52,12 @@ def check_input_syntax(reader):
     return first_line
 
 
+def print_estimate(first_line, db, decoded_lines, query, vss, rows, x, i):
+    handle_time = get_decode_time(first_line, db, decoded_lines, query, vss)
+    estimate = float(handle_time * 10**-9 * (rows - x)) # Estimated time in seconds
+    print(f"{i*10}% done, Estimated decode time: {estimate:4.0f} seconds", end='\r') #HOX! Shows only 4 digits of the estimated seconds
+
+
 def decode(decoded_lines, db, input_file, query, vss):
     # Read the input file decode it and save to a file
     print("Decoding started...")
@@ -69,9 +75,7 @@ def decode(decoded_lines, db, input_file, query, vss):
         i = 1
         for x, line in enumerate(reader):
             if x % int(rows*0.1) == 0:
-                handle_time = get_decode_time(first_line, db, decoded_lines, query, vss)
-                estimate = float(handle_time * 10**-9 * (rows - x)) # Estimated time in seconds
-                print(f"{i*10}% done, Estimated decode time: {estimate:4.0f} seconds", end='\r') #HOX! Shows only 4 digits of the estimated seconds
+                print_estimate(first_line, db, decoded_lines, query, vss, rows, x, i)
                 i += 1
             else:
                 try:
