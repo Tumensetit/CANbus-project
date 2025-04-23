@@ -59,19 +59,21 @@ def print_estimate(avg_ns_per_row, rows, x):
     print(f"{percent_done}% done, Estimated time remaining: {remaining_time_sec:4.0f} seconds", end='\r')
 
 def decode(decoded_lines, db, input_file, query, vss):
-    # Read the input file decode it and save to a file
-    print("Decoding started...")
+    print("Opening input file...")
     with open(input_file, 'r') as input:
-        reader = csv.reader(input, delimiter='\t')
-        first_line = check_input_syntax(reader)
+        first_line_raw = input.readline()
+        first_line = first_line_raw.strip().split('\t')
+        #check_input_syntax(first_line)
 
-        rows = sum(1 for row in reader) + 1
+        rows = sum(1 for _ in input) + 1  # +1 to include the first line
         input.seek(0)
-        reader = csv.reader(input, delimiter='\t')
 
         total_time = 0
         samples = 0
-        for x, line in enumerate(reader):
+
+        print("Starting to decode...")
+        for x, raw_line in enumerate(input):
+            line = raw_line.strip().split('\t')        
             if x % int(rows*0.01) == 0:
                 start = time.perf_counter_ns()
                 decode_func(decoded_lines, line, db, query, vss)
