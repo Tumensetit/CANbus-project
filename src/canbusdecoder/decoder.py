@@ -37,22 +37,27 @@ def convert_serializable(data):
     else:
         return str(data)
 
+def check_input_syntax(reader):
+    errormsg = "ERROR: Input file does not appear to be a valid TSV file. Have you ran tshark to convert .pcapng to a .tsv?  Check that the input file contains the tshark fields time_epoch, can and data"
+    try:
+      first_line = next(reader, None)
+    except UnicodeError:
+        print(errormsg)
+        sys.exit(1)
+
+    if not first_line or len(first_line) < 3 or "ID: " not in first_line[1]:
+        print(errormsg)
+        sys.exit(1)
+
+    return first_line
+
+
 def decode(decoded_lines, db, input_file, query, vss):
     # Read the input file decode it and save to a file
     print("Decoding started...")
     with open(input_file, 'r') as input:
         reader = csv.reader(input, delimiter='\t')
-
-        errormsg = "ERROR: Input file does not appear to be a valid TSV file. Have you ran tshark to convert .pcapng to a .tsv?  Check that the input file contains the tshark fields time_epoch, can and data"
-        try:
-          first_line = next(reader, None)
-        except UnicodeError:
-            print(errormsg)
-            sys.exit(1)
-
-        if not first_line or len(first_line) < 3 or "ID: " not in first_line[1]:
-            print(errormsg)
-            sys.exit(1)
+        first_line = check_input_syntax(reader)
 
         rows = sum(1 for row in reader) + 1
         input.seek(0)
