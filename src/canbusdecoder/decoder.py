@@ -52,11 +52,11 @@ def check_input_syntax(reader):
     return first_line
 
 
-def print_estimate(first_line, db, decoded_lines, query, vss, rows, x, i):
-    handle_time = get_decode_time(first_line, db, decoded_lines, query, vss)
-    estimate = float(handle_time * 10**-9 * (rows - x)) # Estimated time in seconds
-    print(f"{i*10}% done, Estimated decode time: {estimate:4.0f} seconds", end='\r') #HOX! Shows only 4 digits of the estimated seconds
-
+def print_estimate(avg_ns_per_row, rows, x):
+    remaining_rows = max(rows - x, 0)
+    remaining_time_sec = (avg_ns_per_row * remaining_rows) / 1e9
+    percent_done = int(100 * x / rows)
+    print(f"{percent_done}% done, Estimated time remaining: {remaining_time_sec:4.0f} seconds", end='\r')
 
 def decode(decoded_lines, db, input_file, query, vss):
     # Read the input file decode it and save to a file
@@ -69,19 +69,20 @@ def decode(decoded_lines, db, input_file, query, vss):
         input.seek(0)
         reader = csv.reader(input, delimiter='\t')
 
-        handle_time = get_decode_time(first_line, db, decoded_lines, query, vss)
-        estimate = float(handle_time * 10**-9 * rows) # Estimated time in seconds
-        print("Estimated decode time: %.0f seconds" %estimate, end='\r')
-        i = 1
+        total_time = 0
+        samples = 0
         for x, line in enumerate(reader):
-            if x % int(rows*0.1) == 0:
-                print_estimate(first_line, db, decoded_lines, query, vss, rows, x, i)
-                i += 1
+            if x % int(rows*0.01) == 0:
+                start = time.perf_counter_ns()
+                decode_func(decoded_lines, line, db, query, vss)
+                end = time.perf_counter_ns()
+                handle_time = get_decode_time(start, end)
+                total_time += handle_time
+                samples += 1
+                avg_time = total_time // samples
+                print_estimate(avg_time, rows, x)
             else:
-                try:
-                    decode_func(decoded_lines, line, db, query, vss)
-                except KeyError:
-                    continue	# TODO: what do we do with the non found values?
+                decode_func(decoded_lines, line, db, query, vss)
     print() #creates newline for next print
     print("Decoding ready.")
 
@@ -92,23 +93,21 @@ def decode_func(decoded_lines, line, db, query, vss):
     data = line[2]
     padded_data_bytes = bytes.fromhex(data.zfill(16)) # pad to 8-byte value
     # decode the message from the database
-    decoded_data = db.decode_message(canID, padded_data_bytes)
-    message = db.get_message_by_frame_id(canID)
-    if query == None or message.name == query:
-        decoded_line = generate_output(timestamp, message.name, decoded_data, vss)
-        decoded_lines.append(decoded_line)
-
-
-
-
-def get_decode_time(line, db, decoded_lines, query, vss) -> int:
-    start = time.perf_counter_ns()
-    # decode the message from the database
     try:
-        decode_func(decoded_lines, line, db, query, vss)
+        decoded_data = db.decode_message(canID, padded_data_bytes)
+        message = db.get_message_by_frame_id(canID)
+        if query == None or message.name == query:
+            decoded_line = generate_output(timestamp, message.name, decoded_data, vss)
+            decoded_lines.append(decoded_line)
     except KeyError:
-        print("Error while getting handle time")
-    end = time.perf_counter_ns()
+        pass	# TODO: what do we do with the non found valu
+
+
+
+
+
+
+def get_decode_time(start, end) -> int:
     handle_time = end - start
     return handle_time #returns handle time in nanoseconds
 
