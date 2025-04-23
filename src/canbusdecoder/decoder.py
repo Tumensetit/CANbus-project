@@ -37,42 +37,54 @@ def convert_serializable(data):
     else:
         return str(data)
 
+def check_input_syntax(reader):
+    errormsg = "ERROR: Input file does not appear to be a valid TSV file. Have you ran tshark to convert .pcapng to a .tsv?  Check that the input file contains the tshark fields time_epoch, can and data"
+    try:
+      first_line = next(reader, None)
+    except UnicodeError:
+        print(errormsg)
+        sys.exit(1)
+
+    if not first_line or len(first_line) < 3 or "ID: " not in first_line[1]:
+        print(errormsg)
+        sys.exit(1)
+
+    return first_line
+
+
+def print_estimate(avg_ns_per_row, rows, x):
+    remaining_rows = max(rows - x, 0)
+    remaining_time_sec = (avg_ns_per_row * remaining_rows) / 1e9
+    percent_done = int(100 * x / rows)
+    print(f"{percent_done}% done, Estimated time remaining: {remaining_time_sec:4.0f} seconds", end='\r')
+
 def decode(decoded_lines, db, input_file, query, vss):
-    # Read the input file decode it and save to a file
-    print("Decoding started...")
+    print("Opening input file...")
     with open(input_file, 'r') as input:
-        reader = csv.reader(input, delimiter='\t')
+        first_line_raw = input.readline()
+        first_line = first_line_raw.strip().split('\t')
+        #check_input_syntax(first_line)
 
-        errormsg = "ERROR: Input file does not appear to be a valid TSV file. Have you ran tshark to convert .pcapng to a .tsv?  Check that the input file contains the tshark fields time_epoch, can and data"
-        try:
-          first_line = next(reader, None)
-        except UnicodeError:
-            print(errormsg)
-            sys.exit(1)
-
-        if not first_line or len(first_line) < 3 or "ID: " not in first_line[1]:
-            print(errormsg)
-            sys.exit(1)
-
-        rows = sum(1 for row in reader) + 1
+        rows = sum(1 for _ in input) + 1  # +1 to include the first line
         input.seek(0)
-        reader = csv.reader(input, delimiter='\t')
 
-        handle_time = get_decode_time(first_line, db, decoded_lines, query, vss)
-        estimate = float(handle_time * 10**-9 * rows) # Estimated time in seconds
-        print("Estimated decode time: %.0f seconds" %estimate, end='\r')
-        i = 1
-        for x, line in enumerate(reader):
-            if x % int(rows*0.1) == 0:
-                handle_time = get_decode_time(first_line, db, decoded_lines, query, vss)
-                estimate = float(handle_time * 10**-9 * (rows - x)) # Estimated time in seconds
-                print(f"{i*10}% done, Estimated decode time: {estimate:4.0f} seconds", end='\r') #HOX! Shows only 4 digits of the estimated seconds
-                i += 1
+        total_time = 0
+        samples = 0
+
+        print("Starting to decode...")
+        for x, raw_line in enumerate(input):
+            line = raw_line.strip().split('\t')        
+            if x % int(rows*0.01) == 0:
+                start = time.perf_counter_ns()
+                decode_func(decoded_lines, line, db, query, vss)
+                end = time.perf_counter_ns()
+                handle_time = get_decode_time(start, end)
+                total_time += handle_time
+                samples += 1
+                avg_time = total_time // samples
+                print_estimate(avg_time, rows, x)
             else:
-                try:
-                    decode_func(decoded_lines, line, db, query, vss)
-                except KeyError:
-                    continue	# TODO: what do we do with the non found values?
+                decode_func(decoded_lines, line, db, query, vss)
     print() #creates newline for next print
     print("Decoding ready.")
 
@@ -83,23 +95,21 @@ def decode_func(decoded_lines, line, db, query, vss):
     data = line[2]
     padded_data_bytes = bytes.fromhex(data.zfill(16)) # pad to 8-byte value
     # decode the message from the database
-    decoded_data = db.decode_message(canID, padded_data_bytes)
-    message = db.get_message_by_frame_id(canID)
-    if query == None or message.name == query:
-        decoded_line = generate_output(timestamp, message.name, decoded_data, vss)
-        decoded_lines.append(decoded_line)
-
-
-
-
-def get_decode_time(line, db, decoded_lines, query, vss) -> int:
-    start = time.perf_counter_ns()
-    # decode the message from the database
     try:
-        decode_func(decoded_lines, line, db, query, vss)
+        decoded_data = db.decode_message(canID, padded_data_bytes)
+        message = db.get_message_by_frame_id(canID)
+        if query == None or message.name == query:
+            decoded_line = generate_output(timestamp, message.name, decoded_data, vss)
+            decoded_lines.append(decoded_line)
     except KeyError:
-        print("Error while getting handle time")
-    end = time.perf_counter_ns()
+        pass	# TODO: what do we do with the non found valu
+
+
+
+
+
+
+def get_decode_time(start, end) -> int:
     handle_time = end - start
     return handle_time #returns handle time in nanoseconds
 

@@ -74,6 +74,7 @@ Yhtenä tehtävänä oli tutkia diffpriv -menetelmiä. Toteutimme valitsimen --d
 Tarkempi raportti on tehty erillisessä repossa: https://github.com/jaacoppi/canbusdp
 
 ## Sekalaisia jatkokehitysideoita
+- Ohjelma toimii toistaiseksi muistinvaraisesti. Muisti loppuu kesken, mikäli input-tiedosto on merkittävästi suurempi kuin käytettävissä oleva muisti. Keskeisiä refaktorointikohteita on .json -tiedoston tallennuksen muuttaminen niin, että decoded_lines -muuttujaa ei tallenneta. Toisaalta vaatisi muutoksia myös tilastointikoodiin
 - DBC-tiedosto on kaiken dekoodauksen avain; sen tarkempi ymmärtäminen on välttämätöntä tulosten verifioimiseksi
 - Työkalun käyttö oikealla datalla ja oikeilla käyttötapauksilla, ja sitä kautta kehityskohteiden listaus (ainakin suorituksen optimointi ja tutkijoiden workflow:n ymmärtäminen)
 - erillinen tshark-konversioskripti voitaisiin toteuttaa käyttäen pythonin subprocess -komentoa. Näin työkalusta saataisiin käyttöliittymältään yhtenäisempi. Toteutuksessa tulee huomioida käyttöjärjestelmäkohtaiset erot.
