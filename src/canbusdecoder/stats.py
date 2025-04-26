@@ -21,22 +21,38 @@ def generate_combined_keys(data, decoded_lines):
 
 def calculate_stats(stats, data, diffpriv):
     if diffpriv:
-        stats.append(["signal", "standard deviation", "dp mean"])
+        stats.append(["signal name", "signal_count", "min value", "max value", "standard deviation", "dp mean"])
     else:
-        stats.append(["signal", "standard deviation"])
+        stats.append(["signal name", "signal_count", "min value", "max value", "standard deviation"])
 
     for key, values in data.items():
         if key == "non_float_keys":
             continue
+        if not values:
+            print(f"Warning: {key} has no values! Probably a non-float key. TODO: Make sure it's printed and remove tihs line")
+            continue
 
         stddev = statistics.stdev(values) if len(values) > 1 else 0.0
+        signal_count = "TODO"
+
+        min_value = min(values)
+        max_value = max(values)
+
+        if key in stats:
+            existing = stats[key]
+            existing_min = existing[2]
+            existing_max = existing[3]
+            min_value = min(min_value, existing_min)
+            max_value = max(max_value, existing_max)
+
+            stats.remove(existing)
 
         if diffpriv:
             # TODO: diffpriv_stats doesn't return the mean value - yet.
             dp_mean = diffpriv_stats(key, values)
-            stats.append([key, stddev, "TODO: diffpriv value here"])
+            stats.append([key, signal_count, min_value, max_value, stddev, "TODO: diffpriv value here"])
         else:
-            stats.append([key, stddev])
+            stats.append([key, signal_count, min_value, max_value, stddev])
 
     return stats
 
