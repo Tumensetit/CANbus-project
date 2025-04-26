@@ -43,18 +43,21 @@ def calculate_stats(stats, data, diffpriv):
         # TODO: standard deviation calculation needs to be fixed for bigger data inputs
         stddev = statistics.stdev(values) if len(values) > 1 else 0.0
 
-        if key in stats:
-            existing = stats[key]
+        existing = None
+        for entry in stats:
+            if isinstance(entry, list) and entry and entry[0] == key:
+                existing = entry
+                break
+
+        if existing:
             existing_signal_count = existing[1]
             existing_min = existing[2]
             existing_max = existing[3]
-            existing_avg = existing[4]
             existing_value_sum = existing[5]
 
             signal_count += existing_signal_count
             min_value = min(min_value, existing_min)
             max_value = max(max_value, existing_max)
-            # helper calculations for average:
             value_sum += existing_value_sum
             average = value_sum / signal_count
 
@@ -72,7 +75,7 @@ def calculate_stats(stats, data, diffpriv):
 
 
 def process_stats(stats, decoded_lines, diffpriv):
-    print("DEBUG: process_stats()")
+    print("TDO: process_stats() running. This means we're iteratively doing statistics. Remove this line after you're sure it works")
     # Temporary first step: create the data structure of stats. Overwrite with each invocation
     # Final step: add new stats from decoded_lines
     data = {}
