@@ -20,6 +20,7 @@ def generate_combined_keys(data, decoded_lines):
     return data
 
 def calculate_stats(stats, data, diffpriv):
+    # TODO: don't print multiple headers. Maybe do this in CSV output file writing?
     if diffpriv:
         stats.append(["signal name", "signal_count", "min value", "max value", "standard deviation", "dp mean"])
     else:
@@ -32,16 +33,18 @@ def calculate_stats(stats, data, diffpriv):
             print(f"Warning: {key} has no values! Probably a non-float key. TODO: Make sure it's printed and remove tihs line")
             continue
 
-        stddev = statistics.stdev(values) if len(values) > 1 else 0.0
-        signal_count = "TODO"
 
+        signal_count = len(values)
         min_value = min(values)
         max_value = max(values)
+        stddev = statistics.stdev(values) if len(values) > 1 else 0.0
 
         if key in stats:
             existing = stats[key]
+            existing_signal_count = existing[1]
             existing_min = existing[2]
             existing_max = existing[3]
+            signal_count += existing_signal_count
             min_value = min(min_value, existing_min)
             max_value = max(max_value, existing_max)
 
