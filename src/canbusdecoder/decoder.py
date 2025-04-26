@@ -60,6 +60,7 @@ def print_estimate(avg_ns_per_row, rows, x):
 
 def decode(db, input_file, output_file, query, vss):
     decoded_lines = []
+    stats = []
     outputfile = open(output_file, 'a')
 
     print("Opening input file...")
@@ -92,11 +93,12 @@ def decode(db, input_file, output_file, query, vss):
             if x % 40000000 == 0:
                 # Save the output to a file
                 json.dump(decoded_lines, outputfile, indent=2)
+                stats = process_stats(stats, decoded_lines, diffpriv)
                 decoded_lines.clear()
 
     print(f"Decoder output file created: {output_file}")
-    print() #creates newline for next print
-    print("Decoding ready.")
+    output_file.close()
+    return stats
 
 def decode_func(decoded_lines, line, db, query, vss):
     timestamp = line[0]
