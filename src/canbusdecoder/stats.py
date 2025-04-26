@@ -21,10 +21,11 @@ def generate_combined_keys(data, decoded_lines):
 
 def calculate_stats(stats, data, diffpriv):
     # TODO: don't print multiple headers. Maybe do this in CSV output file writing?
+    # TODO: don't print the temp fields in final output
     if diffpriv:
-        stats.append(["signal name", "signal_count", "min value", "max value", "standard deviation", "dp mean"])
+        stats.append(["signal name", "signal_count", "min value", "max value", "average", "TEMP: value sum", "standard deviation", "dp mean"])
     else:
-        stats.append(["signal name", "signal_count", "min value", "max value", "standard deviation"])
+        stats.append(["signal name", "signal_count", "min value", "max value", "average", "TEMP: value sum", "standard deviation"])
 
     for key, values in data.items():
         if key == "non_float_keys":
@@ -37,6 +38,8 @@ def calculate_stats(stats, data, diffpriv):
         signal_count = len(values)
         min_value = min(values)
         max_value = max(values)
+        value_sum = sum(values)
+        average = value_sum / signal_count
         stddev = statistics.stdev(values) if len(values) > 1 else 0.0
 
         if key in stats:
@@ -44,18 +47,24 @@ def calculate_stats(stats, data, diffpriv):
             existing_signal_count = existing[1]
             existing_min = existing[2]
             existing_max = existing[3]
+            existing_avg = existing[4]
+            existing_value_sum = existing[5]
+
             signal_count += existing_signal_count
             min_value = min(min_value, existing_min)
             max_value = max(max_value, existing_max)
+            # helper calculations for average:
+            value_sum += existing_value_sum
+            average = value_sum / signal_count
 
             stats.remove(existing)
 
         if diffpriv:
             # TODO: diffpriv_stats doesn't return the mean value - yet.
             dp_mean = diffpriv_stats(key, values)
-            stats.append([key, signal_count, min_value, max_value, stddev, "TODO: diffpriv value here"])
+            stats.append([key, signal_count, min_value, max_value, average, value_sum, stddev, "TODO: diffpriv value here"])
         else:
-            stats.append([key, signal_count, min_value, max_value, stddev])
+            stats.append([key, signal_count, min_value, max_value, average, value_sum, stddev])
 
     return stats
 
