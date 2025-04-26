@@ -40,6 +40,7 @@ def calculate_stats(stats, data, diffpriv):
         max_value = max(values)
         value_sum = sum(values)
         average = value_sum / signal_count
+        # TODO: standard deviation calculation needs to be fixed for bigger data inputs
         stddev = statistics.stdev(values) if len(values) > 1 else 0.0
 
         if key in stats:
