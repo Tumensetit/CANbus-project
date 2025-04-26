@@ -14,7 +14,8 @@ def generate_combined_keys(data, decoded_lines):
             if isinstance(value, (int, float)):
                 data[combined_key].append(value)
             else:
-                data["non_float_keys"].append(combined_key)
+                if combined_key not in data["non_float_keys"]:
+                    data["non_float_keys"].append(combined_key)
 
     return data
 

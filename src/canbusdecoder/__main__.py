@@ -41,7 +41,6 @@ def main():
 
     stats = decode(db, input_file, output_file, query, vss, diffpriv)
 
-    print("ASDF1: " + str(stats))
     # TODO: after restructuring stats, this needs to be tested. Does this work if --query ASDF?
     if len(stats) == 0:
         print("No messages found. If using --query, use --list-message-names to list message names available in the DBC file.")

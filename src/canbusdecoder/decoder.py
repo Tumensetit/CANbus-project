@@ -59,7 +59,7 @@ def print_estimate(avg_ns_per_row, rows, x):
     percent_done = int(100 * x / rows)
     print(f"{percent_done}% done, Estimated time remaining: {remaining_time_sec:4.0f} seconds", end='\r')
 
-def process_(decoded_lines, stats, outputfile, diffpriv):
+def process_lines(decoded_lines, stats, outputfile, diffpriv):
     # Save the output to a file
     json.dump(decoded_lines, outputfile, indent=2)
     stats = process_stats(stats, decoded_lines, diffpriv)
