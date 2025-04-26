@@ -20,23 +20,25 @@ def generate_combined_keys(data, decoded_lines):
     return data
 
 def calculate_stats(stats, data, diffpriv):
-    # NOTE: we want to append to stats lines, not create new ones with each invocation
+    if diffpriv:
+        stats.append(["signal", "standard deviation", "dp mean"])
+    else:
+        stats.append(["signal", "standard deviation"])
+
     for key, values in data.items():
         if key == "non_float_keys":
             continue
 
         stddev = statistics.stdev(values) if len(values) > 1 else 0.0
 
-        dp_mean = "0"
         if diffpriv:
+            # TODO: diffpriv_stats doesn't return the mean value - yet.
             dp_mean = diffpriv_stats(key, values)
-            if dp_mean is not None:
-                print("TODO: how do we add optional values to stats?")
-
-        stats.append([key,stddev,dp_mean])
+            stats.append([key, stddev, "TODO: diffpriv value here"])
+        else:
+            stats.append([key, stddev])
 
     return stats
-    
 
 
 
@@ -47,10 +49,11 @@ def process_stats(stats, decoded_lines, diffpriv):
     data = {}
     data["non_float_keys"] = []
     data = generate_combined_keys(data, decoded_lines)
-    #TODO: fix this print
-    print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(data["non_float_keys"])))
+
     stats = calculate_stats(stats, data, diffpriv)
-    
+
+    #TODO: fix this print by returning non-float keys and printing it in statistics
+    #print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(data["non_float_keys"])))
     return stats
 
 def show_metadata_stats(stats):
