@@ -104,6 +104,7 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
 
     print(f"Decoder output file created: {output_file}")
     print("Processing final stats..")
+    # TODO: possible bug: BRAKE_AMOUNT and BRAKE_PEDAL go to stats twice if there's no stats processing & docede_lines clearing before this final call..
     stats = process_lines(decoded_lines, stats, outputfile, diffpriv)
 
     # TODO how to close output_file file handle?
