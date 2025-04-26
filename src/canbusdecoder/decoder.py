@@ -102,8 +102,10 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
             if x % 40000000 == 0:
                 stats = process_lines(decoded_lines, stats, outputfile, diffpriv)
 
-    stats = process_lines(decoded_lines, stats, outputfile, diffpriv)
     print(f"Decoder output file created: {output_file}")
+    print("Processing final stats..")
+    stats = process_lines(decoded_lines, stats, outputfile, diffpriv)
+
     # TODO how to close output_file file handle?
     return stats
 
