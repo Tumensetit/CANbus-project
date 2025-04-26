@@ -14,9 +14,9 @@ def generate_combined_keys(data, decoded_lines):
             if isinstance(value, (int, float)):
                 data[combined_key].append(value)
             else:
-                data{"non_float_keys"].append(combined_key)
+                data["non_float_keys"].append(combined_key)
 
-
+    return data
 
 def calculate_stats(stats, data, diffpriv):
     # NOTE: we want to append to stats lines, not create new ones with each invocation
@@ -26,10 +26,12 @@ def calculate_stats(stats, data, diffpriv):
 
         stddev = statistics.stdev(values) if len(values) > 1 else 0.0
 
+        dp_mean = "0"
         if diffpriv:
             dp_mean = diffpriv_stats(key, values)
             if dp_mean is not None:
                 print("TODO: how do we add optional values to stats?")
+        stats.append([key,stddev,dp_mean])
         # TODO: check if key can be found from the first column of stats. if not , create it
         # TODO: append stats in this format: key, stddev, dp_mean (but only if dp_mean exists)
 
@@ -38,15 +40,14 @@ def calculate_stats(stats, data, diffpriv):
 
 
 
-def process_stats(stats, decoded_lines, diffpriv)):
+def process_stats(stats, decoded_lines, diffpriv):
     # Temporary first step: create the data structure of stats. Overwrite with each invocation
     # Final step: add new stats from decoded_lines
     data = {}
     data["non_float_keys"] = []
-    data = generate_combines_keys(data, decoded_lines)
-
-
-    print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(data["non_float_keys"])))
+    data = generate_combined_keys(data, decoded_lines)
+    #TODO: fix this print
+    # print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(data["non_float_keys"])))
     stats = calculate_stats(stats, data, diffpriv)
     
     return stats
@@ -65,7 +66,7 @@ def show_metadata_stats(stats):
 
     print("signals/sec: " + str(signal_count / duration))
 
-def save_stats(stats, csv_output_file)
+def save_stats(stats, csv_output_file):
     # TODO: Do we eant to check if if exists in main, refuse to start decoding if it does?
     # This is a write and and not append so it's not a big problem
     with open(csv_output_file, "w", newline="") as f:

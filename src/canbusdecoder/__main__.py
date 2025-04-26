@@ -41,19 +41,22 @@ def main():
 
     stats = decode(db, input_file, output_file, query, vss, diffpriv)
 
+    print("ASDF1: " + str(stats))
     # TODO: after restructuring stats, this needs to be tested. Does this work if --query ASDF?
     if len(stats) == 0:
         print("No messages found. If using --query, use --list-message-names to list message names available in the DBC file.")
         sys.exit()
-    else:
-       show_stats(stats)
-       # TODO: is this renaming logic working for special cases like filename.json.txt.json and necessary in the first place?
-       # should we simply append the _stats.csv?
-       if not output_file.endswith(".json"):
-           output_file += ".json"
-       stats_csv_file = output_file.replace(".json", "_stats.csv")
 
-       save_stats(stats, stats_csv_file)
+    print("TOOO: fix showing stats")
+    #show_stats(stats)
+    #TODO: is this renaming logic working for special cases like filename.json.txt.json and necessary in the first place?
+    #should we simply append the _stats.csv?
+    if not output_file.endswith(".json"):
+        output_file += ".json"
+
+    stats_csv_file = output_file.replace(".json", "_stats.csv")
+
+    save_stats(stats, stats_csv_file)
 
 if __name__ == "__main__":
     main()

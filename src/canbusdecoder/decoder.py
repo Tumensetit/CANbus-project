@@ -6,6 +6,7 @@ import time
 import cantools
 
 from canbusdecoder.vss import convertDataToVss
+from .stats import *
 
 
 
@@ -58,7 +59,7 @@ def print_estimate(avg_ns_per_row, rows, x):
     percent_done = int(100 * x / rows)
     print(f"{percent_done}% done, Estimated time remaining: {remaining_time_sec:4.0f} seconds", end='\r')
 
-def decode(db, input_file, output_file, query, vss):
+def decode(db, input_file, output_file, query, vss, diffpriv):
     decoded_lines = []
     stats = []
     outputfile = open(output_file, 'a')
@@ -94,10 +95,11 @@ def decode(db, input_file, output_file, query, vss):
                 # Save the output to a file
                 json.dump(decoded_lines, outputfile, indent=2)
                 stats = process_stats(stats, decoded_lines, diffpriv)
+                print("ASDF2: " + str(stats))
                 decoded_lines.clear()
 
     print(f"Decoder output file created: {output_file}")
-    output_file.close()
+    # TODO how to close output_file file handle?
     return stats
 
 def decode_func(decoded_lines, line, db, query, vss):
