@@ -31,9 +31,8 @@ def calculate_stats(stats, data, diffpriv):
             dp_mean = diffpriv_stats(key, values)
             if dp_mean is not None:
                 print("TODO: how do we add optional values to stats?")
+
         stats.append([key,stddev,dp_mean])
-        # TODO: check if key can be found from the first column of stats. if not , create it
-        # TODO: append stats in this format: key, stddev, dp_mean (but only if dp_mean exists)
 
     return stats
     
@@ -41,13 +40,14 @@ def calculate_stats(stats, data, diffpriv):
 
 
 def process_stats(stats, decoded_lines, diffpriv):
+    print("DEBUG: process_stats()")
     # Temporary first step: create the data structure of stats. Overwrite with each invocation
     # Final step: add new stats from decoded_lines
     data = {}
     data["non_float_keys"] = []
     data = generate_combined_keys(data, decoded_lines)
     #TODO: fix this print
-    # print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(data["non_float_keys"])))
+    print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(data["non_float_keys"])))
     stats = calculate_stats(stats, data, diffpriv)
     
     return stats
