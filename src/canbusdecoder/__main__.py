@@ -1,5 +1,4 @@
 import argparse
-import json
 import sys
 
 from .decoder import *
@@ -33,7 +32,6 @@ def main():
     vss = args.vss
     output_file = args.outputfile
 
-    decoded_lines = []
     print("Reading DBC file...")
     db = cantools.database.load_file(vehicle_db_file)
 
@@ -41,24 +39,23 @@ def main():
         print_dbc_message_names(db)
         sys.exit(0)
 
-    decode(decoded_lines, db, input_file, query, vss)
+    stats = decode(db, input_file, output_file, query, vss, diffpriv)
 
-    if len(decoded_lines) == 0:
+    # TODO: after restructuring stats, this needs to be tested. Does this work if --query ASDF?
+    if len(stats) == 0:
         print("No messages found. If using --query, use --list-message-names to list message names available in the DBC file.")
         sys.exit()
 
-    print("Saving the results")
-
+    print("TOOO: fix showing stats")
+    #show_stats(stats)
+    #TODO: is this renaming logic working for special cases like filename.json.txt.json and necessary in the first place?
+    #should we simply append the _stats.csv?
     if not output_file.endswith(".json"):
         output_file += ".json"
+
     stats_csv_file = output_file.replace(".json", "_stats.csv")
 
-    # Save the output to a file
-    with open(output_file, 'w') as outputfile:
-        json.dump(decoded_lines, outputfile, indent=2)
-
-    print(f"Decoder output file created: {output_file}")
-    show_stats(decoded_lines, diffpriv, stats_csv_file)
+    save_stats(stats, stats_csv_file)
 
 if __name__ == "__main__":
     main()

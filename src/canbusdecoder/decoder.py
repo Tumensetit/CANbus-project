@@ -1,4 +1,4 @@
-import csv
+import json
 import re
 import sys
 import time
@@ -6,6 +6,7 @@ import time
 import cantools
 
 from canbusdecoder.vss import convertDataToVss
+from .stats import *
 
 
 
@@ -58,7 +59,18 @@ def print_estimate(avg_ns_per_row, rows, x):
     percent_done = int(100 * x / rows)
     print(f"{percent_done}% done, Estimated time remaining: {remaining_time_sec:4.0f} seconds", end='\r')
 
-def decode(decoded_lines, db, input_file, query, vss):
+def process_lines(decoded_lines, stats, outputfile, diffpriv):
+    # Save the output to a file
+    json.dump(decoded_lines, outputfile, indent=2)
+    stats = process_stats(stats, decoded_lines, diffpriv)
+    decoded_lines.clear()
+    return stats
+
+def decode(db, input_file, output_file, query, vss, diffpriv):
+    decoded_lines = []
+    stats = []
+    outputfile = open(output_file, 'a')
+
     print("Opening input file...")
     with open(input_file, 'r') as input:
         first_line_raw = input.readline()
@@ -85,8 +97,18 @@ def decode(decoded_lines, db, input_file, query, vss):
                 print_estimate(avg_time, rows, x)
             else:
                 decode_func(decoded_lines, line, db, query, vss)
-    print() #creates newline for next print
-    print("Decoding ready.")
+            # Release memoery every now and then. 40000000 is about 3g at maximum usage
+
+            if x % 40000000 == 0:
+                stats = process_lines(decoded_lines, stats, outputfile, diffpriv)
+
+    print(f"Decoder output file created: {output_file}")
+    print("Processing final stats..")
+    # TODO: possible bug: BRAKE_AMOUNT and BRAKE_PEDAL go to stats twice if there's no stats processing & docede_lines clearing before this final call..
+    stats = process_lines(decoded_lines, stats, outputfile, diffpriv)
+
+    # TODO how to close output_file file handle?
+    return stats
 
 def decode_func(decoded_lines, line, db, query, vss):
     timestamp = line[0]
