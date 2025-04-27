@@ -40,6 +40,8 @@ Jos raakadata_konversio.sh ajon kanssa ongelmia > katso docs\tshark_konversio_oh
 
 Automaattitestien ajo:
 
+% pytest
+tai:
 % python tests/unit_test.py
 
 Ajaa muutaman valmiin testin, jotka testaavat CanID:n oikeellisuutta sekä vss ja stats moduulien tulostuksien oikeellisuutta, ja täten samalla niiden toimivuutta näkyvällä tasolla.
