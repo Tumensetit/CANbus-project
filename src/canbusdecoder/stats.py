@@ -20,12 +20,7 @@ def generate_combined_keys(data, decoded_lines):
     return data
 
 def calculate_stats(stats, data, diffpriv):
-    # TODO: don't print multiple headers. Maybe do this in CSV output file writing?
-    # TODO: don't print the temp fields in final output
-    if diffpriv:
-        stats.append(["signal name", "signal_count", "min value", "max value", "average", "TEMP: value sum", "standard deviation", "dp mean"])
-    else:
-        stats.append(["signal name", "signal_count", "min value", "max value", "average", "TEMP: value sum", "standard deviation"])
+    # Note: stats header fields are initialized in explained in decode()
 
     for key, values in data.items():
         if key == "non_float_keys":
