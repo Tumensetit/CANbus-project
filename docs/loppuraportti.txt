@@ -49,7 +49,13 @@ https://www.csselectronics.com/pages/can-dbc-file-database-intro
 ### tekniset valinnat ja mahdolliset rajoitteet
 Ensimmäinen versio toteutuksesta noudatti pipeline-arkkitehtuuria; meillä oli sekalainen kasa skriptejä, joilla tehtiin ohjelman suorituksen vaiheet erillisinä, osina. Välissä tieto tallennettiin tiedostoiksi.  Ratkaisu toimi alussa, mutta lisäominaisuuksien kehittäminen tiimityönä osoittautui hankalaksi koordinoida. Yhtenäinen python-projekti osoittautui helpommaksi kehitystyön kannakta. Pythonin valikoituminen toteutuskieleksi johtui puhtaasti siitä, että dbc-konversioon löytyi nopeasti helppokäyttöinen cantools-kirjasto.
 
-Projektia toteuttaessa ei pohdittu toteutuksen resurssinkäyttöä. Käytössä ollut esimerkkitiedosto kääntyi kehittäjien koneilla muutamissa minuuteissa. Voi olla, että isommat data-aineistot aiheuttavat toteutuksessa ongelmia esimerkiksi muistinkäytössä. Tällöin ohjelmaa on optimoitava.
+Projektia toteuttaessa ei pohdittu toteutuksen resurssinkäyttöä. Käytössä ollut esimerkkitiedosto kääntyi kehittäjien koneilla muutamissa minuuteissa. 
+
+Isoilla datamäärillä täytyy huomioida käytettävissä olevan muistin rajallisuus. Toteutuksemme on kovakoodatusti rajattu käyttämään maksimissaan n. 3 gigaa muistia. Toteutuksessa on omat ongelmansa ja paljon huomioimattomia rajatapuksia. Ratkaisun on tarkoitus mahdollistaa rajattoman suuren datamäärän käsittely. Teknisesti toteutus toimii lukemalla käsittelyä varten noin 3g dataa kerralla sisään. Ratkaisu toimii dekoodatun json-tiedoston tuottamiseen. Ratkaisu ei kuitenkaan ole hyvä tilastointiin. Tiettyjä tunnuslukuja, kuten mediaani, ei voida laskea osissa.
+
+Vaihtoehtoinen toteutustapa tilastojen laskemiseen olisi palata pipeline-toteutukseen, jossa ensin luotaisiin dekoodattu json-tiedosto, josta sitten käsiteltäisiin signaaalit yksi signaalityyppi kerrallaan. Näin muistissa kerrallaan olevan datan määrää saataisiin pienennettyä, ja mahdollisesti laskettua esimerkiksi mediaaniarvoja. Teorian tasolla ongelma on edelleen sama; mediaanin laskemiseksi muistissa on oltava kaikki ksittäiset arvot kerralla. Toinen ratkaisutapa olisi tutustua matemaattisiin ratkaisuihin tarkemmin, ja esittää tarkan mediaanin sijaan valistunut arvaus. Tämä tutkintalinja päätettiin ajanpuutteen vuoksi jättää tarkemmin selvittämättä.
+
+Yhteenvetona teknisistä valinnoista voidaan todeta, että määrittely ja käyttötapausten tarkempi tunteminen on jäänyt projektissa puutteelliseksi.
 
 ### VSS
 Yhtenä tehtävänä oli tutustua VSS-syntaksiin. Toteutimme mvp-tyylisen ominaisuuden. Dekooderin valitsimella --vss tehdään signaaleille konversio DBC-muodosta VSS-muotoon.
