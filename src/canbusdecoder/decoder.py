@@ -69,6 +69,11 @@ def process_lines(decoded_lines, stats, outputfile, diffpriv):
 def decode(db, input_file, output_file, query, vss, diffpriv):
     decoded_lines = []
     stats = []
+    if diffpriv:
+        stats.append(["signal name", "signal_count", "min value", "max value", "average", "TEMP: value sum", "standard deviation", "dp mean"])
+    else:
+        stats.append(["signal name", "signal_count", "min value", "max value", "average", "TEMP: value sum", "standard deviation"])
+
     outputfile = open(output_file, 'a')
 
     print("Opening input file...")
