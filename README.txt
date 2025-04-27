@@ -1,5 +1,10 @@
 # Ohjeet:
 
+HOX!!!
+# __main__.py tiedoston "from .decoder import *" ja "from .stats import *" huomattu mahdollisia onglemia ohjelmalle löytää sisältävää pakettia
+  => '.'-merkin poistaminen decoder ja stats nimien edestä huomattu korjaavan ongelman
+# Tällä hetkellä stats.py ei toimi kunnolla jos unix_epoch ei muutu tarpeeksi datatiedoston sisällä.
+
 Ohjelma tallentaa dekoodauksen tuloksen json-formaatissa, ja tulostaa tilastot näytölle.
 
 Tarvittavien python kirjastojen asentaminen:
@@ -31,12 +36,14 @@ Esimerkki (linux/mac):
 ## Dekoodaa
 % canbusdecoder -i <datatiedosto.tsv> -d data/toyota_rav4_hybrid_2017_pt_generated.dbc -Q BREAK --diffpriv
 
-Tällä hetkellä stats.py ei toimi kunnolla jos unix_epoch ei muutu tarpeeksi datatiedoston sisällä.
 Jos raakadata_konversio.sh ajon kanssa ongelmia > katso docs\tshark_konversio_ohje_windows.txt
 
-## Automaattitestien ajo:
+Automaattitestien ajo:
 
-% pytest
+% python tests/unit_test.py
+
+Ajaa muutaman valmiin testin, jotka testaavat CanID:n oikeellisuutta sekä vss ja stats moduulien tulostuksien oikeellisuutta, ja täten samalla niiden toimivuutta näkyvällä tasolla.
+Testien ajon jälkeen tulostaa terminaaliin läpäistyjen testien määrän suhteessa kaikkien testien määrään, ja tulostaa virheet läpäisemättömien testien epäonnistumisien kohdalla.
 
 ## Suoritettu demo
 1. Raakadata tiedoston lataus

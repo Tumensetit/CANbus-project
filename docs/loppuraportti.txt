@@ -91,6 +91,17 @@ Jatkokehitysideana filtterityökalu, joka hakee ID:n .dbc -tiedostosta nimen per
 % grep "ID: ${KEY2BO}" konvertoitu_raakadata.tsv > filtteröity_raakadata.tsv
 
 
+### Automaattitestit
+Projektin tuotokselle luotiin automaattitestit, jotka testaa muutamaa toimivuutta, mutta eivät kata riittävällä tasolla tuotoksen toimivuutta.
+    - Tämä johtui siitä, että automaattitestien luominen jäi projektin loppupuolelle ja jouduttiin tekemään kiireessä, ja täten pakottaen ne jäämään mvp-tasolle, jotta näyttäisimme ymärtänemme automaattitestien tarpeen vaikka huomasimmekin näiden tarpeen liian myöhässä projektin elinkaarta miettien.
+Tästä syystä testejä tulisi kehittää pitemmälle ja testitapauksien määrää tulisi kasvattaa tekemään automaattitesteistä kattavampia.
+
+Tällä hetkellä automaattitestit testaavat muutamia toiminnallisuuksia, kuten joitain tulosteita ja parse_canID oikeellisuutta.   
+
+Opittua
+- Automaattitestausta tulisi aloittaa aiemmassa vaiheessa projektia 
+- Testejä tulisi ylläpitää koko kehityksen ajan, ja luoda uusia testejä uusien toiminnalisuuksien kehittyessä.
+- Automaattitestien kattavuuden tulisi kattaa koko tai merkittävimmät toiminnallisuudet ohjelmasta.
 
 Lisätietoa:
 https://wiki.wireshark.org/Development/PcapNg
