@@ -90,7 +90,10 @@ def show_stats(metadata):
     duration = metadata.first_epoch - metadata.last_epoch
     print("time between first and last signal: " + str(duration) + "s")
 
-    print("messages/sec: " + str(metadata.message_count / duration))
+    if duration != 0:
+        print("messages/sec: " + str(metadata.message_count / duration))
+    else:
+        print("messages/sec: -")
 
 def save_stats(stats, csv_output_file):
     # TODO: Do we eant to check if if exists in main, refuse to start decoding if it does?
