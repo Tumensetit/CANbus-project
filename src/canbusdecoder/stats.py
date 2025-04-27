@@ -83,19 +83,14 @@ def process_stats(stats, decoded_lines, diffpriv):
     #print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(data["non_float_keys"])))
     return stats
 
-def show_metadata_stats(stats):
-    # TODO: in addition to stats about the signals, , we need some sort of metadata structure for these
+def show_stats(metadata):
     print("Statistics: ")
 
-    signal_count = len(stats)
-    print("\t# of signals: " + str(signal_count))
-
-    first = float(stats[0]['unix_epoch'])
-    last = float(stats[-1]['unix_epoch'])
-    duration = last - first
+    print("\t# of messages: " + metadata.message_count)
+    duration = metadata.first_epoch - metadata.last_epoch
     print("time between first and last signal: " + str(duration) + "s")
 
-    print("signals/sec: " + str(signal_count / duration))
+    print("messages/sec: " + str(metadata.message_count / duration))
 
 def save_stats(stats, csv_output_file):
     # TODO: Do we eant to check if if exists in main, refuse to start decoding if it does?
