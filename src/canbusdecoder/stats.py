@@ -70,7 +70,7 @@ def calculate_stats(stats, data, diffpriv):
 
 
 def process_stats(stats, decoded_lines, diffpriv):
-    print("TDO: process_stats() running. This means we're iteratively doing statistics. Remove this line after you're sure it works")
+    print("TODO: process_stats() running. This means we're iteratively doing statistics. Remove this line after you're sure it works")
     # Temporary first step: create the data structure of stats. Overwrite with each invocation
     # Final step: add new stats from decoded_lines
     data = {}
