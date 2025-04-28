@@ -68,6 +68,9 @@ def print_estimate(avg_ns_per_row, rows, x):
     print(f"{percent_done}% done, Estimated time remaining: {remaining_time_sec:4.0f} seconds", end='\r')
 
 def process_lines(decoded_lines, stats, metadata, outputfile, diffpriv):
+    if len(decoded_lines) == 0:
+        return stats, metadata
+
     # Save the output to a file
     json.dump(decoded_lines, outputfile, indent=2)
     stats = process_stats(stats, decoded_lines, diffpriv)
@@ -79,7 +82,7 @@ def process_lines(decoded_lines, stats, metadata, outputfile, diffpriv):
     metadata.last_epoch =float(decoded_lines[-1]['unix_epoch'])
         
     decoded_lines.clear()
-    return stats
+    return stats, metadata
 
 def decode(db, input_file, output_file, query, vss, diffpriv):
     decoded_lines = []
@@ -126,12 +129,12 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
 
             # Release memoery every now and then. 40000000 is about 3g at maximum usage
             if x % 40000000 == 0:
-                stats = process_lines(decoded_lines, stats, metadata, outputfile, diffpriv)
+                stats, metadata = process_lines(decoded_lines, stats, metadata, outputfile, diffpriv)
 
     print(f"Decoder output file created: {output_file}")
     print("Processing final stats..")
     # TODO: possible bug: BRAKE_AMOUNT and BRAKE_PEDAL go to stats twice if there's no stats processing & docede_lines clearing before this final call..
-    stats = process_lines(decoded_lines, stats, metadata, outputfile, diffpriv)
+    stats,metadata = process_lines(decoded_lines, stats, metadata, outputfile, diffpriv)
 
     outputfile.close()
     return stats, metadata

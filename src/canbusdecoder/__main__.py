@@ -41,8 +41,7 @@ def main():
 
     stats, metadata = decode(db, input_file, output_file, query, vss, diffpriv)
 
-    # TODO: after restructuring stats, this needs to be tested. Does this work if --query ASDF?
-    if len(stats) == 0:
+    if len(stats) <= 1:
         print("No messages found. If using --query, use --list-message-names to list message names available in the DBC file.")
         sys.exit()
 
