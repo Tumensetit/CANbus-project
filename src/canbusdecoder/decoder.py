@@ -25,7 +25,7 @@ def parse_canID(text):
         return int(match.group(1))
     return None
 
-def generate_output(timestamp, canID, data, vss): # TODO: replace canID with decoded value
+def generate_output(timestamp, canID, data, vss):
     converted_data = convert_serializable(convertDataToVss(data) if vss else data)
 
     output_json = {
