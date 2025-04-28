@@ -149,7 +149,7 @@ def decode_func(decoded_lines, line, db, query, vss):
             decoded_line = generate_output(timestamp, message.name, decoded_data, vss)
             decoded_lines.append(decoded_line)
     except KeyError:
-        pass	# TODO: what do we do with the non found valu
+        pass
 
 
 
