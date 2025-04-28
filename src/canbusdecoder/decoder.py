@@ -11,6 +11,7 @@ from .stats import *
 
 
 
+# TODO: combine stats and metadata into one class
 @dataclass
 class Metadata:
     message_count: int
