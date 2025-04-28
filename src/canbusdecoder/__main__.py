@@ -1,8 +1,8 @@
 import argparse
 import sys
 
-from .decoder import *
-from .stats import *
+from canbusdecoder.decoder import *
+from canbusdecoder.stats import *
 
 def create_arguments():
     parser = argparse.ArgumentParser(description="CAN vehicle data decoder and analyser")

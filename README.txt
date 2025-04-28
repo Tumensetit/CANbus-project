@@ -1,10 +1,5 @@
 # Ohjeet:
 
-HOX!!!
-# __main__.py tiedoston "from .decoder import *" ja "from .stats import *" huomattu mahdollisia onglemia ohjelmalle löytää sisältävää pakettia
-  => '.'-merkin poistaminen decoder ja stats nimien edestä huomattu korjaavan ongelman
-# Tällä hetkellä stats.py ei toimi kunnolla jos unix_epoch ei muutu tarpeeksi datatiedoston sisällä.
-
 Ohjelma tallentaa dekoodauksen tuloksen json-formaatissa, ja tulostaa tilastot näytölle.
 
 Tarvittavien python kirjastojen asentaminen:

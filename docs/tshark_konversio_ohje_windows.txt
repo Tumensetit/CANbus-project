@@ -20,9 +20,6 @@ Luo tiedosto haluamallasi nimellä joka päättyy .tsv esim "data.tsv"
 Sitten aja kyseinen komento CMD:ssä
 HUOMAA muokata tiedostopolut ensin oikeisiin tiedostoihin, eli ensimmäinen polku on .pcapng raakadata tiedostoon ja 
 toinen on luomaasi .tsv taulukkoon johon data tulee.
-tshark -r C:\path\to\data\data.pcapng -T fields -e frame.time_epoch -e can -e data > C:\path\to\data\tshark_data.tsv 2>&1
+tshark -r C:\path\to\data\data.pcapng -T fields -e frame.time_epoch -e can -e data > C:\path\to\data\tshark_data.tsv
 
-"2>&1" huomattu mahdollisesti tarpeettomaksi windowsilla, mutta joillain alustoilla tarpeelliseksi.
-
-Komento ei printtaa mitään onnistumisen merkiksi, mutta suorittamisen onnistumisen tietää siitä, 
-että komennon alle ilmestyy taas C:\>, jota ei näy suorittamisen aikana
+Komento ei printtaa mitään onnistumisen merkiksi.
