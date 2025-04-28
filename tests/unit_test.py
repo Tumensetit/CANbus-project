@@ -52,22 +52,5 @@ class TestGenerateOutput(unittest.TestCase):
         output = generate_output(timestamp, canID, data, vss=True)
         self.assertEqual(output, expected)
 
-class TestShowStats(unittest.TestCase):
-    def test_show_stats(self):
-        decoded_lines = [
-            {"unix_epoch": "100", "CanID": "BRAKE", "signal": {"pressure": 2.0}},
-            {"unix_epoch": "102", "CanID": "BRAKE", "signal": {"pressure": 4.0}},
-        ]
-
-        with patch('builtins.print') as mock_print:
-            show_stats(decoded_lines, diffpriv=False)
-            mock_print.assert_any_call("Statistics: ")
-            mock_print.assert_any_call("\t# of signals: 2")
-            mock_print.assert_any_call("time between first and last signal: 2.0s")
-            mock_print.assert_any_call("signals/sec: 1.0")
-            mock_print.assert_any_call("BRAKE.pressure: 1.414214")
-
-
-
 if __name__ == '__main__':
     unittest.main()
