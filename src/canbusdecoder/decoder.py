@@ -129,7 +129,7 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
     stats = process_lines(decoded_lines, stats, metadata, outputfile, diffpriv)
 
     # TODO how to close output_file file handle?
-    return stats
+    return stats, metadata
 
 def decode_func(decoded_lines, line, db, query, vss):
     timestamp = line[0]

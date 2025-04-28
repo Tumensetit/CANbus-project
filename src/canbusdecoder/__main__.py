@@ -47,7 +47,7 @@ def main():
         sys.exit()
 
     show_stats(metadata)
-)
+
     #TODO: is this renaming logic working for special cases like filename.json.txt.json and necessary in the first place?
     #should we simply append the _stats.csv?
     if not output_file.endswith(".json"):
