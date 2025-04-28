@@ -106,8 +106,13 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
 
         print("Starting to decode...")
         for x, raw_line in enumerate(input):
-            line = raw_line.strip().split('\t')        
-            if x % int(rows*0.01) == 0:
+            line = raw_line.strip().split('\t')
+
+            # calculate estimate of remaining time every 1%. Check for division by zero error
+            step = int(rows * 0.01)
+            if step == 0:
+                step = 1
+            if x % step == 0:
                 start = time.perf_counter_ns()
                 decode_func(decoded_lines, line, db, query, vss)
                 end = time.perf_counter_ns()
