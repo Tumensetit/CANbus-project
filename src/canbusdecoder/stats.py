@@ -20,12 +20,7 @@ def generate_combined_keys(data, decoded_lines):
     return data
 
 def calculate_stats(stats, data, diffpriv):
-    # TODO: don't print multiple headers. Maybe do this in CSV output file writing?
-    # TODO: don't print the temp fields in final output
-    if diffpriv:
-        stats.append(["signal name", "signal_count", "min value", "max value", "average", "TEMP: value sum", "standard deviation", "dp mean"])
-    else:
-        stats.append(["signal name", "signal_count", "min value", "max value", "average", "TEMP: value sum", "standard deviation"])
+    # Note: stats header fields are initialized in explained in decode()
 
     for key, values in data.items():
         if key == "non_float_keys":
@@ -75,7 +70,7 @@ def calculate_stats(stats, data, diffpriv):
 
 
 def process_stats(stats, decoded_lines, diffpriv):
-    print("TDO: process_stats() running. This means we're iteratively doing statistics. Remove this line after you're sure it works")
+    print("TODO: process_stats() running. This means we're iteratively doing statistics. Remove this line after you're sure it works")
     # Temporary first step: create the data structure of stats. Overwrite with each invocation
     # Final step: add new stats from decoded_lines
     data = {}
@@ -88,19 +83,17 @@ def process_stats(stats, decoded_lines, diffpriv):
     #print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(data["non_float_keys"])))
     return stats
 
-def show_metadata_stats(stats):
-    # TODO: in addition to stats about the signals, , we need some sort of metadata structure for these
+def show_stats(metadata):
     print("Statistics: ")
 
-    signal_count = len(stats)
-    print("\t# of signals: " + str(signal_count))
-
-    first = float(stats[0]['unix_epoch'])
-    last = float(stats[-1]['unix_epoch'])
-    duration = last - first
+    print("\t# of messages: " + str(metadata.message_count))
+    duration = metadata.last_epoch - metadata.first_epoch
     print("time between first and last signal: " + str(duration) + "s")
 
-    print("signals/sec: " + str(signal_count / duration))
+    if duration != 0:
+        print("messages/sec: " + str(metadata.message_count / duration))
+    else:
+        print("messages/sec: -")
 
 def save_stats(stats, csv_output_file):
     # TODO: Do we eant to check if if exists in main, refuse to start decoding if it does?

@@ -2,12 +2,20 @@ import json
 import re
 import sys
 import time
+from dataclasses import dataclass
 
 import cantools
 
 from canbusdecoder.vss import convertDataToVss
 from .stats import *
 
+
+
+@dataclass
+class Metadata:
+    message_count: int
+    first_epoch: float
+    last_epoch: float
 
 
 
@@ -59,16 +67,29 @@ def print_estimate(avg_ns_per_row, rows, x):
     percent_done = int(100 * x / rows)
     print(f"{percent_done}% done, Estimated time remaining: {remaining_time_sec:4.0f} seconds", end='\r')
 
-def process_lines(decoded_lines, stats, outputfile, diffpriv):
+def process_lines(decoded_lines, stats, metadata, outputfile, diffpriv):
     # Save the output to a file
     json.dump(decoded_lines, outputfile, indent=2)
     stats = process_stats(stats, decoded_lines, diffpriv)
+
+    metadata.message_count += len(decoded_lines)
+    if metadata.first_epoch == None:
+        metadata.first_epoch = float(decoded_lines[0]['unix_epoch'])
+
+    metadata.last_epoch =float(decoded_lines[-1]['unix_epoch'])
+        
     decoded_lines.clear()
     return stats
 
 def decode(db, input_file, output_file, query, vss, diffpriv):
     decoded_lines = []
+    metadata = Metadata(message_count=0, first_epoch=None, last_epoch=None)
     stats = []
+    if diffpriv:
+        stats.append(["signal name", "signal_count", "min value", "max value", "average", "TEMP: value sum", "standard deviation", "dp mean"])
+    else:
+        stats.append(["signal name", "signal_count", "min value", "max value", "average", "TEMP: value sum", "standard deviation"])
+
     outputfile = open(output_file, 'a')
 
     print("Opening input file...")
@@ -85,8 +106,13 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
 
         print("Starting to decode...")
         for x, raw_line in enumerate(input):
-            line = raw_line.strip().split('\t')        
-            if x % int(rows*0.01) == 0:
+            line = raw_line.strip().split('\t')
+
+            # calculate estimate of remaining time every 1%. Check for division by zero error
+            step = int(rows * 0.01)
+            if step == 0:
+                step = 1
+            if x % step == 0:
                 start = time.perf_counter_ns()
                 decode_func(decoded_lines, line, db, query, vss)
                 end = time.perf_counter_ns()
@@ -97,18 +123,18 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
                 print_estimate(avg_time, rows, x)
             else:
                 decode_func(decoded_lines, line, db, query, vss)
-            # Release memoery every now and then. 40000000 is about 3g at maximum usage
 
+            # Release memoery every now and then. 40000000 is about 3g at maximum usage
             if x % 40000000 == 0:
-                stats = process_lines(decoded_lines, stats, outputfile, diffpriv)
+                stats = process_lines(decoded_lines, stats, metadata, outputfile, diffpriv)
 
     print(f"Decoder output file created: {output_file}")
     print("Processing final stats..")
     # TODO: possible bug: BRAKE_AMOUNT and BRAKE_PEDAL go to stats twice if there's no stats processing & docede_lines clearing before this final call..
-    stats = process_lines(decoded_lines, stats, outputfile, diffpriv)
+    stats = process_lines(decoded_lines, stats, metadata, outputfile, diffpriv)
 
     # TODO how to close output_file file handle?
-    return stats
+    return stats, metadata
 
 def decode_func(decoded_lines, line, db, query, vss):
     timestamp = line[0]
