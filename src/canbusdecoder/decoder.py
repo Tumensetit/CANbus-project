@@ -133,7 +133,7 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
     # TODO: possible bug: BRAKE_AMOUNT and BRAKE_PEDAL go to stats twice if there's no stats processing & docede_lines clearing before this final call..
     stats = process_lines(decoded_lines, stats, metadata, outputfile, diffpriv)
 
-    # TODO how to close output_file file handle?
+    outputfile.close()
     return stats, metadata
 
 def decode_func(decoded_lines, line, db, query, vss):
