@@ -138,7 +138,6 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
 
 def decode_func(decoded_lines, line, db, query, vss):
     timestamp = line[0]
-    # TODO: is canID the right term? BO_ in .dbc
     canID = parse_canID(line[1]) # TODO: error handling
     data = line[2]
     padded_data_bytes = bytes.fromhex(data.zfill(16)) # pad to 8-byte value
