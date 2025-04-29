@@ -82,6 +82,82 @@ class TestDecodeFunctionWithSmallInputFile(unittest.TestCase):
             os.remove(output_file)
 
 
+@pytest.fixture
+def sample_data():
+    return {
+        "temperature": [22.5, 23.0, 21.8, 22.1, 22.7, 23.2, 22.9, 21.5, 22.0, 23.1],
+        "humidity": [45.0, 47.2, 46.8, 44.1, 43.9, 45.3, 46.0, 44.7, 45.8, 46.5],
+    }
+
+def test_incremental_vs_full_batch(sample_data):
+    # Arrange
+    split_data = []
+    for i in range(5):
+        chunk = {}
+        for key in sample_data:
+            start = i * 2
+            end = (i + 1) * 2
+            chunk[key] = sample_data[key][start:end]
+        split_data.append(chunk)
+
+    # Act
+    stats_full = calculate_stats([], dict(sample_data), diffpriv=False)
+
+    stats_incremental = []
+    for chunk in split_data:
+        stats_incremental = calculate_stats(stats_incremental, chunk, diffpriv=False)
+
+    # Assert
+    stats_full_sorted = sorted(stats_full, key=lambda x: x[0])
+    stats_incremental_sorted = sorted(stats_incremental, key=lambda x: x[0])
+
+    assert len(stats_full_sorted) == len(stats_incremental_sorted)
+
+    for full, inc in zip(stats_full_sorted, stats_incremental_sorted):
+        assert full[0] == inc[0]  # key
+        assert full[1] == inc[1]  # count
+        assert full[2] == inc[2]  # min
+        assert full[3] == inc[3]  # max
+        assert pytest.approx(full[4], rel=1e-9) == inc[4]  # mean
+        assert pytest.approx(full[5], rel=1e-9) == inc[5]  # sum
+        assert pytest.approx(full[6], rel=1e-9) == inc[6]  # stddev
+        assert pytest.approx(full[7], rel=1e-9) == inc[7]
+        full_data = deepcopy(sample_data)
+
+        split_data = []
+        for i in range(5):
+            chunk = {}
+            for key in sample_data:
+                start = i * 2
+                end = (i + 1) * 2
+                chunk[key] = sample_data[key][start:end]
+            split_data.append(chunk)
+
+        # Act
+        stats_full = calculate_stats([], full_data, diffpriv=False)
+
+        stats_incremental = []
+        for chunk in split_data:
+            stats_incremental = calculate_stats(stats_incremental, chunk, diffpriv=False)
+
+        # Assert
+        # Sort both lists by key name for consistent comparison
+        stats_full_sorted = sorted(stats_full, key=lambda x: x[0])
+        stats_incremental_sorted = sorted(stats_incremental, key=lambda x: x[0])
+
+        assert len(stats_full_sorted) == len(stats_incremental_sorted)
+
+        for full, inc in zip(stats_full_sorted, stats_incremental_sorted):
+            assert full[0] == inc[0]  # key
+            assert full[1] == inc[1]  # count
+            assert full[2] == inc[2]  # min
+            assert full[3] == inc[3]  # max
+            assert pytest.approx(full[4], rel=1e-9) == inc[4]  # mean
+            assert pytest.approx(full[5], rel=1e-9) == inc[5]  # sum
+            assert pytest.approx(full[6], rel=1e-9) == inc[6]  # stddev
+            assert pytest.approx(full[7], rel=1e-9) == inc[7]  # M2
+
+
 
 
 if __name__ == '__main__':
