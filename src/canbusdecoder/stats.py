@@ -1,5 +1,6 @@
 import csv
 import statistics
+import math
 
 from canbusdecoder.diffpriv import diffpriv_stats
 
@@ -19,9 +20,20 @@ def generate_combined_keys(data, decoded_lines):
 
     return data
 
-def calculate_stats(stats, data, diffpriv):
-    # Note: stats header fields are initialized in explained in decode()
+# Welford's algorithm for incremental calculations
+def update_stats(existing_n, existing_mean, existing_M2, new_values):
+    for x in new_values:
+        existing_n += 1
+        delta = x - existing_mean
+        existing_mean += delta / existing_n
+        delta2 = x - existing_mean
+        existing_M2 += delta * delta2
+    return existing_n, existing_mean, existing_M2
 
+def finalize_stddev(n, M2):
+    return math.sqrt(M2 / (n - 1)) if n > 1 else 0.0
+
+def calculate_stats(stats, data, diffpriv):
     for key, values in data.items():
         if key == "non_float_keys":
             continue
@@ -29,15 +41,10 @@ def calculate_stats(stats, data, diffpriv):
             print(f"Warning: {key} has no values! Probably a non-float key. TODO: Make sure it's printed and remove tihs line")
             continue
 
-
-        signal_count = len(values)
         min_value = min(values)
         max_value = max(values)
-        value_sum = sum(values)
-        average = value_sum / signal_count
-        # TODO: standard deviation calculation needs to be fixed for bigger data inputs
-        stddev = statistics.stdev(values) if len(values) > 1 else 0.0
 
+        # Initialize or find existing stats entry
         existing = None
         for entry in stats:
             if isinstance(entry, list) and entry and entry[0] == key:
@@ -45,25 +52,31 @@ def calculate_stats(stats, data, diffpriv):
                 break
 
         if existing:
-            existing_signal_count = existing[1]
+            existing_n = existing[1]
             existing_min = existing[2]
             existing_max = existing[3]
-            existing_value_sum = existing[5]
-
-            signal_count += existing_signal_count
-            min_value = min(min_value, existing_min)
-            max_value = max(max_value, existing_max)
-            value_sum += existing_value_sum
-            average = value_sum / signal_count
-
+            existing_mean = existing[4]
+            existing_M2 = existing[7]
             stats.remove(existing)
+        else:
+            existing_n = 0
+            existing_mean = 0.0
+            existing_M2 = 0.0
+            existing_min = float("inf")
+            existing_max = float("-inf")
+
+        updated_n, updated_mean, updated_M2 = update_stats(existing_n, existing_mean, existing_M2, values)
+
+        min_value = min(min_value, existing_min)
+        max_value = max(max_value, existing_max)
+        value_sum = updated_mean * updated_n
+        stddev = finalize_stddev(updated_n, updated_M2)
 
         if diffpriv:
-            # TODO: diffpriv_stats doesn't return the mean value - yet.
             dp_mean = diffpriv_stats(key, values)
-            stats.append([key, signal_count, min_value, max_value, average, value_sum, stddev, "TODO: diffpriv value here"])
+            stats.append([key, updated_n, min_value, max_value, updated_mean, value_sum, stddev, updated_M2, "TODO: diffpriv value here"])
         else:
-            stats.append([key, signal_count, min_value, max_value, average, value_sum, stddev])
+            stats.append([key, updated_n, min_value, max_value, updated_mean, value_sum, stddev, updated_M2])
 
     return stats
 
