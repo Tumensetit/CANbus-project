@@ -82,9 +82,6 @@ def calculate_stats(stats, data, diffpriv):
 
 
 def process_stats(stats, decoded_lines, diffpriv):
-    print("TODO: process_stats() running. This means we're iteratively doing statistics. Remove this line after you're sure it works")
-    # Temporary first step: create the data structure of stats. Overwrite with each invocation
-    # Final step: add new stats from decoded_lines
     data = {}
     data["non_float_keys"] = []
     data = generate_combined_keys(data, decoded_lines)
