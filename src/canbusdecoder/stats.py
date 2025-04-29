@@ -56,7 +56,7 @@ def calculate_stats(stats, data, diffpriv):
             existing_min = existing[2]
             existing_max = existing[3]
             existing_mean = existing[4]
-            existing_M2 = existing[7]
+            existing_M2 = existing[6]
             stats.remove(existing)
         else:
             existing_n = 0
@@ -69,14 +69,13 @@ def calculate_stats(stats, data, diffpriv):
 
         min_value = min(min_value, existing_min)
         max_value = max(max_value, existing_max)
-        value_sum = updated_mean * updated_n
         stddev = finalize_stddev(updated_n, updated_M2)
 
         if diffpriv:
             dp_mean = diffpriv_stats(key, values)
-            stats.append([key, updated_n, min_value, max_value, updated_mean, value_sum, stddev, updated_M2, "TODO: diffpriv value here"])
+            stats.append([key, updated_n, min_value, max_value, updated_mean, stddev, updated_M2, "TODO: diffpriv value here"])
         else:
-            stats.append([key, updated_n, min_value, max_value, updated_mean, value_sum, stddev, updated_M2])
+            stats.append([key, updated_n, min_value, max_value, updated_mean, stddev, updated_M2])
 
     return stats
 

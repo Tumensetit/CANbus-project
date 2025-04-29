@@ -119,9 +119,8 @@ def test_incremental_vs_full_batch(sample_data):
         assert full[2] == inc[2]  # min
         assert full[3] == inc[3]  # max
         assert pytest.approx(full[4], rel=1e-9) == inc[4]  # mean
-        assert pytest.approx(full[5], rel=1e-9) == inc[5]  # sum
-        assert pytest.approx(full[6], rel=1e-9) == inc[6]  # stddev
-        assert pytest.approx(full[7], rel=1e-9) == inc[7]
+        assert pytest.approx(full[5], rel=1e-9) == inc[5]  # stddev
+        assert pytest.approx(full[6], rel=1e-9) == inc[6] # M2
         full_data = deepcopy(sample_data)
 
         split_data = []
@@ -153,9 +152,8 @@ def test_incremental_vs_full_batch(sample_data):
             assert full[2] == inc[2]  # min
             assert full[3] == inc[3]  # max
             assert pytest.approx(full[4], rel=1e-9) == inc[4]  # mean
-            assert pytest.approx(full[5], rel=1e-9) == inc[5]  # sum
-            assert pytest.approx(full[6], rel=1e-9) == inc[6]  # stddev
-            assert pytest.approx(full[7], rel=1e-9) == inc[7]  # M2
+            assert pytest.approx(full[5], rel=1e-9) == inc[5]  # stddev
+            assert pytest.approx(full[6], rel=1e-9) == inc[6]  # M2
 
 
 
