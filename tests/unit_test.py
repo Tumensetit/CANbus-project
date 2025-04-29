@@ -1,8 +1,12 @@
 import unittest
 from unittest.mock import patch
-from canbusdecoder.stats import show_stats
+from canbusdecoder.stats import calculate_stats
 from canbusdecoder.decoder import parse_canID, convert_serializable, generate_output, decode
 
+from copy import deepcopy
+
+import cantools
+import pytest
 
 
 class TestParseCanID(unittest.TestCase):
@@ -52,5 +56,34 @@ class TestGenerateOutput(unittest.TestCase):
         output = generate_output(timestamp, canID, data, vss=True)
         self.assertEqual(output, expected)
 
+
+import os
+import unittest
+
+class TestDecodeFunctionWithSmallInputFile(unittest.TestCase):
+    def test_decode_output(self):
+
+        db = cantools.database.load_file("data/toyota_rav4_hybrid_2017_pt_generated.dbc")
+        input_file = "tests/testinput_10_lines.tsv"
+        output_file = "tests/test_output_file.json"
+        query = "BRAKE"
+        vss = False
+        diffpriv = False
+
+        stats, metadata = decode(db, input_file, output_file, query, vss, diffpriv)
+
+        # Test input has 2 "BRAKE" messages + 1 one header
+        self.assertEqual(len(stats), 3)
+        self.assertEqual(metadata.message_count, 2)
+        self.assertEqual(metadata.first_epoch, 1736342840.2959864)
+        self.assertEqual(metadata.last_epoch, 1736342840.296327)
+
+        if os.path.exists(output_file):
+            os.remove(output_file)
+
+
+
+
 if __name__ == '__main__':
     unittest.main()
+
