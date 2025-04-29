@@ -89,10 +89,13 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
     decoded_lines = []
     metadata = Metadata(message_count=0, first_epoch=None, last_epoch=None)
     stats = []
+    # TODO: Move M2 from here to metadata class.
+    # Explanation: running variance accumulator used for computing stddev with Welford's algorithm
     if diffpriv:
-        stats.append(["signal name", "signal_count", "min value", "max value", "average", "TEMP: value sum", "standard deviation", "dp mean"])
+        stats.append(["signal_name", "signal count" , "min", "max", "mean", "stddev","M2","TODO: diffpriv mean"])
+
     else:
-        stats.append(["signal name", "signal_count", "min value", "max value", "average", "TEMP: value sum", "standard deviation"])
+        stats.append(["signal_name", "signal count" , "min", "max", "mean", "stddev","M2"])
 
     outputfile = open(output_file, 'a')
 
