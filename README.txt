@@ -31,7 +31,7 @@ Example (Linux/mac):
 ## Decode:
 % canbusdecoder -i <data_file.tsv> -d data/toyota_rav4_hybrid_2017_pt_generated.dbc -Q BREAK --diffpriv
 
-If problems while running raakadata_konversio.sh > see docs\tshark_konversio_ohje_windows.txt
+If problems while running raakadata_konversio.sh > see docs\tshark_conversion_windows.txt
 
 Running automatic tests:
 
@@ -91,7 +91,7 @@ Esimerkki (linux/mac):
 ## Dekoodaa
 % canbusdecoder -i <datatiedosto.tsv> -d data/toyota_rav4_hybrid_2017_pt_generated.dbc -Q BREAK --diffpriv
 
-Jos raakadata_konversio.sh ajon kanssa ongelmia > katso docs\tshark_konversio_ohje_windows.txt
+Jos raakadata_konversio.sh ajon kanssa ongelmia > katso docs\tshark_conversion_windows.txt
 
 Automaattitestien ajo:
 
