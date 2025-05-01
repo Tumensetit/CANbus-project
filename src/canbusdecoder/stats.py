@@ -111,6 +111,14 @@ def show_stats(metadata):
 def save_stats(stats, csv_output_file):
     # TODO: Do we eant to check if if exists in main, refuse to start decoding if it does?
     # This is a write and and not append so it's not a big problem
+
+    # Remove the "M2" field needed for incrementally calculating standard deviation but irrelevant for the end user
+    try:
+        m2_index = stats[0].index("M2")
+        stats = [row[:m2_index] + row[m2_index+1:] for row in stats]
+    except ValueError:
+        pass  # "M2" not found, leave stats unchanged
+
     with open(csv_output_file, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerows(stats)

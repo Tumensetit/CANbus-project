@@ -26,10 +26,10 @@ class Metadata:
         self.first_epoch = 0
         self.last_epoch = 0
         self.non_float_keys = []
-        # TODO: Move M2 from here to a variable in metadata class.
-        # Explanation: running variance accumulator used for computing stddev with Welford's algorithm
         self.stats = []
 
+        # Create the stats file header. Column M2 is needed for Welford's algorithm. It will be removed when saving the file
+        # Explanation of M2: running variance accumulator used for computing stddev with Welford's algorithm
         if diffpriv:
             self.stats.append(["signal_name", "signal count" , "min", "max", "mean", "stddev","M2","TODO: diffpriv mean"])
         else:
