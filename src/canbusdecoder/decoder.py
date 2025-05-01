@@ -14,6 +14,7 @@ from .stats import *
 
 @dataclass
 class Metadata:
+    all_messages_count: int
     decoded_message_count: int
     first_epoch: float
     last_epoch: float
@@ -21,6 +22,7 @@ class Metadata:
     stats: List[List[Any]]	# holds the header and stats that will be saved as a csv
 
     def __init__(self, diffpriv):
+        self.all_messages_count = 0
         self.decoded_message_count = 0
         self.first_epoch = 0
         self.last_epoch = 0
@@ -116,6 +118,7 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
         #check_input_syntax(first_line)
 
         rows = sum(1 for _ in input) + 1  # +1 to include the first line
+        metadata.all_messages_count = rows # TODO: make an automated check that this is read correctly
         input.seek(0)
 
         total_time = 0

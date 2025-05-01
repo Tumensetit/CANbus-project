@@ -96,7 +96,12 @@ def process_stats(metadata, decoded_lines, diffpriv):
 def show_stats(metadata):
     print("Statistics: ")
 
+    print("\t# of messages input: " + str(metadata.all_messages_count))
     print("\t# of decoded messages: " + str(metadata.decoded_message_count))
+    # We should never get a division by zero error here because stats aren't shown if therea re no messages
+    decoded_percentage = metadata.decoded_message_count / metadata.all_messages_count
+    print(f"\t% of decoded messages: {decoded_percentage:.2%}")
+
     duration = metadata.last_epoch - metadata.first_epoch
     print("time between first and last signal: " + str(duration) + "s")
 
