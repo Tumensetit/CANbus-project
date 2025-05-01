@@ -81,17 +81,17 @@ def calculate_stats(stats, data, diffpriv):
 
 
 
-def process_stats(stats, metadata, decoded_lines, diffpriv):
+def process_stats(metadata, decoded_lines, diffpriv):
     data = {}
     data["non_float_keys"] = []
     data = generate_combined_keys(data, decoded_lines)
 
-    stats = calculate_stats(stats, data, diffpriv)
+    metadata.stats = calculate_stats(metadata.stats, data, diffpriv)
 
     metadata.non_float_keys.extend(sorted(data["non_float_keys"]))
 
 
-    return stats, metadata
+    return metadata
 
 def show_stats(metadata):
     print("Statistics: ")

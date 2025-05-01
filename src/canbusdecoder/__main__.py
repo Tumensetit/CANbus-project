@@ -49,9 +49,9 @@ def main():
         print_dbc_message_names(db)
         sys.exit(0)
 
-    stats, metadata = decode(db, input_file, output_file, query, vss, diffpriv)
+    metadata = decode(db, input_file, output_file, query, vss, diffpriv)
 
-    if len(stats) <= 1:
+    if len(metadata.stats) <= 1:
         print("No messages found. If using --query, use --list-message-names to list message names available in the DBC file.")
         sys.exit()
 
@@ -59,7 +59,7 @@ def main():
 
     stats_csv_file = f"{output_file}_stats.csv"
 
-    save_stats(stats, stats_csv_file)
+    save_stats(metadata.stats, stats_csv_file)
 
 if __name__ == "__main__":
     main()
