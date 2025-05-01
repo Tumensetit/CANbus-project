@@ -14,14 +14,14 @@ from .stats import *
 
 @dataclass
 class Metadata:
-    message_count: int
+    decoded_message_count: int
     first_epoch: float
     last_epoch: float
     non_float_keys: List[str]
     stats: List[List[Any]]	# holds the header and stats that will be saved as a csv
 
     def __init__(self, diffpriv):
-        self.message_count = 0
+        self.decoded_message_count = 0
         self.first_epoch = 0
         self.last_epoch = 0
         self.non_float_keys = []
@@ -93,7 +93,7 @@ def process_lines(decoded_lines, metadata, outputfile, diffpriv):
     json.dump(decoded_lines, outputfile, indent=2)
     metadata = process_stats(metadata, decoded_lines, diffpriv)
 
-    metadata.message_count += len(decoded_lines)
+    metadata.decoded_message_count += len(decoded_lines)
     if metadata.first_epoch == None:
         metadata.first_epoch = float(decoded_lines[0]['unix_epoch'])
 

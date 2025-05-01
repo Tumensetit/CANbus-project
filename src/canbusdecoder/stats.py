@@ -96,12 +96,12 @@ def process_stats(metadata, decoded_lines, diffpriv):
 def show_stats(metadata):
     print("Statistics: ")
 
-    print("\t# of messages: " + str(metadata.message_count))
+    print("\t# of decoded messages: " + str(metadata.decoded_message_count))
     duration = metadata.last_epoch - metadata.first_epoch
     print("time between first and last signal: " + str(duration) + "s")
 
     if duration != 0:
-        print("messages/sec: " + str(metadata.message_count / duration))
+        print("messages/sec: " + str(metadata.decoded_message_count / duration))
     else:
         print("messages/sec: -")
 
