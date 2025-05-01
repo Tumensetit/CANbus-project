@@ -112,6 +112,7 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
     with open(input_file, 'r') as input:
         first_line_raw = input.readline()
         first_line = first_line_raw.strip().split('\t')
+        # TODO: make check_input_syntax work, make an automated test for it
         #check_input_syntax(first_line)
 
         rows = sum(1 for _ in input) + 1  # +1 to include the first line
