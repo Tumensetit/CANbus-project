@@ -24,7 +24,7 @@ class Metadata:
     def __init__(self, diffpriv):
         self.all_messages_count = 0
         self.decoded_message_count = 0
-        self.first_epoch = 0
+        self.first_epoch = None
         self.last_epoch = 0
         self.non_float_keys = []
         self.stats = []
