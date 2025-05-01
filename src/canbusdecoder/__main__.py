@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 
 from canbusdecoder.decoder import *
@@ -19,6 +20,15 @@ def create_arguments():
     optional_group.add_argument("-o", "--outputfile", type=str, help="Output file for saving decoded data (default: decoder_output.json)", default="decoder_output.json")
     return parser.parse_args()
 
+def get_unique_filename(filename):
+    base, ext = os.path.splitext(filename)
+    counter = 1
+    new_filename = filename
+    while os.path.exists(new_filename):
+        new_filename = f"{base}_{counter}{ext}"
+        counter += 1
+    return new_filename
+
 
 def main():
     args = create_arguments()
@@ -30,7 +40,7 @@ def main():
     diffpriv = args.diffpriv
     list_message_nemes = args.list_message_names
     vss = args.vss
-    output_file = args.outputfile
+    output_file = get_unique_filename(args.outputfile)
 
     print("Reading DBC file...")
     db = cantools.database.load_file(vehicle_db_file)
@@ -47,12 +57,7 @@ def main():
 
     show_stats(metadata)
 
-    #TODO: is this renaming logic working for special cases like filename.json.txt.json and necessary in the first place?
-    #should we simply append the _stats.csv?
-    if not output_file.endswith(".json"):
-        output_file += ".json"
-
-    stats_csv_file = output_file.replace(".json", "_stats.csv")
+    stats_csv_file = f"{output_file}_stats.csv"
 
     save_stats(stats, stats_csv_file)
 
