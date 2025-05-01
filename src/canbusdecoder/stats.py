@@ -81,16 +81,17 @@ def calculate_stats(stats, data, diffpriv):
 
 
 
-def process_stats(stats, decoded_lines, diffpriv):
+def process_stats(stats, metadata, decoded_lines, diffpriv):
     data = {}
     data["non_float_keys"] = []
     data = generate_combined_keys(data, decoded_lines)
 
     stats = calculate_stats(stats, data, diffpriv)
 
-    #TODO: fix this print by returning non-float keys and printing it in statistics
-    #print("Keys that have non-float values. Can't calculate standard deviation: " + str(sorted(data["non_float_keys"])))
-    return stats
+    metadata.non_float_keys.extend(sorted(data["non_float_keys"]))
+
+
+    return stats, metadata
 
 def show_stats(metadata):
     print("Statistics: ")
@@ -103,6 +104,8 @@ def show_stats(metadata):
         print("messages/sec: " + str(metadata.message_count / duration))
     else:
         print("messages/sec: -")
+
+    print(f"Keys that had non-float values were decoded but omitted from stats: {metadata.non_float_keys}")
 
 def save_stats(stats, csv_output_file):
     # TODO: Do we eant to check if if exists in main, refuse to start decoding if it does?

@@ -3,6 +3,7 @@ import re
 import sys
 import time
 from dataclasses import dataclass
+from typing import List
 
 import cantools
 
@@ -17,6 +18,13 @@ class Metadata:
     message_count: int
     first_epoch: float
     last_epoch: float
+    non_float_keys: List[str]
+
+    def __init__(self):
+        self.message_count = 0
+        self.first_epoch = 0
+        self.last_epoch = 0
+        self.non_float_keys = []
 
 
 
@@ -57,7 +65,7 @@ def check_input_syntax(reader):
 
     if not first_line or len(first_line) < 3 or "ID: " not in first_line[1]:
         print(errormsg)
-        sys.exit(1)
+        synon_floatnon_floats.exit(1)
 
     return first_line
 
@@ -74,7 +82,7 @@ def process_lines(decoded_lines, stats, metadata, outputfile, diffpriv):
 
     # Save the output to a file
     json.dump(decoded_lines, outputfile, indent=2)
-    stats = process_stats(stats, decoded_lines, diffpriv)
+    stats, metadata = process_stats(stats, metadata, decoded_lines, diffpriv)
 
     metadata.message_count += len(decoded_lines)
     if metadata.first_epoch == None:
@@ -87,7 +95,7 @@ def process_lines(decoded_lines, stats, metadata, outputfile, diffpriv):
 
 def decode(db, input_file, output_file, query, vss, diffpriv):
     decoded_lines = []
-    metadata = Metadata(message_count=0, first_epoch=None, last_epoch=None)
+    metadata = Metadata()
     stats = []
     # TODO: Move M2 from here to metadata class.
     # Explanation: running variance accumulator used for computing stddev with Welford's algorithm
