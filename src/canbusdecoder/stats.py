@@ -106,7 +106,7 @@ def show_stats(metadata):
     print("time between first and last signal: " + str(duration) + "s")
 
     if duration != 0:
-        print("messages/sec: " + str(metadata.decoded_message_count / duration))
+        print(f"messages/sec: {(metadata.decoded_message_count / duration):.2f}")
     else:
         print("messages/sec: -")
 
