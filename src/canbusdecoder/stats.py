@@ -105,7 +105,8 @@ def show_stats(metadata):
     else:
         print("messages/sec: -")
 
-    print(f"Keys that had non-float values were decoded but omitted from stats: {metadata.non_float_keys}")
+    if len(metadata.non_float_keys) != 0:
+        print(f"Keys that had non-float values were decoded but omitted from stats: {metadata.non_float_keys}")
 
 def save_stats(stats, csv_output_file):
     # TODO: Do we eant to check if if exists in main, refuse to start decoding if it does?
