@@ -2,7 +2,7 @@ import csv
 import statistics
 import math
 
-from canbusdecoder.diffpriv import diffpriv_stats
+from canbusdecoder.diffpriv import diffpriv_nonincremental_mean
 
 
 def generate_combined_keys(data, decoded_lines):
@@ -38,7 +38,7 @@ def calculate_stats(stats, data, diffpriv):
         if key == "non_float_keys":
             continue
         if not values:
-            print(f"Warning: {key} has no values! Probably a non-float key. TODO: Make sure it's printed and remove tihs line")
+            print(f"Warning: {key} has no values! Probably a non-float key. TODO: Make sure it's printed and remove this line")
             continue
 
         min_value = min(values)
@@ -72,8 +72,8 @@ def calculate_stats(stats, data, diffpriv):
         stddev = finalize_stddev(updated_n, updated_M2)
 
         if diffpriv:
-            dp_mean = diffpriv_stats(key, values)
-            stats.append([key, updated_n, min_value, max_value, updated_mean, stddev, updated_M2, "TODO: diffpriv value here"])
+            dp_mean = diffpriv_nonincremental_mean(key, values)
+            stats.append([key, updated_n, min_value, max_value, updated_mean, stddev, updated_M2, dp_mean])
         else:
             stats.append([key, updated_n, min_value, max_value, updated_mean, stddev, updated_M2])
 

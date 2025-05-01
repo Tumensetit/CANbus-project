@@ -3,10 +3,11 @@ from diffprivlib.utils import PrivacyLeakWarning
 
 import warnings
 
-
-
-
-def diffpriv_stats(key, data):
+# NOTE:
+# This function is non-incremental
+# It assumes it will be called only once.
+# This means the values will be off for datasets that cause the program to count stats incrementally
+def diffpriv_nonincremental_mean(key, data):
     # Experimental diffpriv values
     epsilon = 1.0
     # Estimate lower and upper bounds privately
@@ -22,6 +23,6 @@ def diffpriv_stats(key, data):
         dp_mean = mean(data, epsilon=epsilon, bounds=(lower_bound, upper_bound))
     except Exception as e:
         print(f"{key}: Error occurred when calculating experimental DiffPriv mean: {e}")
-        return
+        return "ERROR"
 
-    print(f"{key}: Experimental: Differentially Private Mean: {dp_mean}")
+    return dp_mean

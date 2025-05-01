@@ -12,7 +12,6 @@ from .stats import *
 
 
 
-# TODO: combine stats and metadata into one class
 @dataclass
 class Metadata:
     message_count: int
@@ -31,7 +30,7 @@ class Metadata:
         # Create the stats file header. Column M2 is needed for Welford's algorithm. It will be removed when saving the file
         # Explanation of M2: running variance accumulator used for computing stddev with Welford's algorithm
         if diffpriv:
-            self.stats.append(["signal_name", "signal count" , "min", "max", "mean", "stddev","M2","TODO: diffpriv mean"])
+            self.stats.append(["signal_name", "signal count" , "min", "max", "mean", "stddev","M2","DP mean (nonincremental latest batch"])
         else:
             self.stats.append(["signal_name", "signal count" , "min", "max", "mean", "stddev","M2"])
 
