@@ -70,11 +70,12 @@ class TestDecodeFunctionWithSmallInputFile(unittest.TestCase):
         vss = False
         diffpriv = False
 
-        stats, metadata = decode(db, input_file, output_file, query, vss, diffpriv)
+        metadata = decode(db, input_file, output_file, query, vss, diffpriv)
 
         # Test input has 2 "BRAKE" messages + 1 one header
-        self.assertEqual(len(stats), 3)
-        self.assertEqual(metadata.message_count, 2)
+        self.assertEqual(len(metadata.stats), 3)
+        self.assertEqual(metadata.all_messages_count, 10)
+        self.assertEqual(metadata.decoded_message_count, 2)
         self.assertEqual(metadata.first_epoch, 1736342840.2959864)
         self.assertEqual(metadata.last_epoch, 1736342840.296327)
 
