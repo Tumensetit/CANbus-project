@@ -118,7 +118,7 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
         #check_input_syntax(first_line)
 
         rows = sum(1 for _ in input) + 1  # +1 to include the first line
-        metadata.all_messages_count = rows # TODO: make an automated check that this is read correctly
+        metadata.all_messages_count = rows
         input.seek(0)
 
         total_time = 0
