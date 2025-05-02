@@ -32,12 +32,13 @@ timestamp (unix epoc)   CanID                                                   
 1736342840.295986390    Controller Area Network, Ext. ID: 166 (0x000000a6), Length: 8   00000040000000ee
 
 Jatkokehitysidea: .tsv-tiedostossa CanID -kentästä tarvitaan vain ID (yllä 166). Tiedostokokoa saadaan pienemmäksi filtteröimällä turhat merkit pois jo tässä vaiheessa, ja muuttamalla dekooderissa olevaa parserin toteutusta.
+Jatkokehitysidea 2: Automaattinen testi sille onko syötetty tiedosto oikeanlaista .tsv formaattia puuttuu ja olisi tehdä tulevaisuudessa.
 
 ## dekoodaus ja dbc-tiedosto
 		
 Purettu raakadata konvertoidaan ihmisen ymmärrettävissä olevaksi informaatioksi dekoodaamalla se ajoneuvon mallikohtaista .dbc -tiedostoa vasten.
 
-Pythonin cantools-kirjasto dekoodaa raakadatan .canId -kentästä ECU:n nimen (cantools-käsittein "messaga name", ja .data -kentästä signaalin osat.
+Pythonin cantools-kirjasto dekoodaa raakadatan .canId -kentästä ECU:n nimen cantools-käsittein "messaga name", ja .data -kentästä signaalin osat.
 
 Lisätietoa:
 https://github.com/commaai/opendbc
