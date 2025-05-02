@@ -6,7 +6,15 @@ from canbusdecoder.decoder import *
 from canbusdecoder.stats import *
 
 def create_arguments():
+    from importlib.metadata import version, PackageNotFoundError
+
+    try:
+        __version__ = version("canbusdecoder")
+    except PackageNotFoundError:
+        __version__ = "unknown"
+
     parser = argparse.ArgumentParser(description="CAN vehicle data decoder and analyser")
+    parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
 
     required_group = parser.add_argument_group("Required arguments")
     required_group.add_argument("-i", "--inputfile", type=str, help="Name of the file that contains the data in the specified .tsv format", required=True)
