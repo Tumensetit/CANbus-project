@@ -28,15 +28,22 @@ def create_arguments():
     optional_group.add_argument("-o", "--outputfile", type=str, help="Output file for saving decoded data (default: decoder_output.json)", default="decoder_output.json")
     return parser.parse_args()
 
-def get_unique_filename(filename):
-    base, ext = os.path.splitext(filename)
-    counter = 1
-    new_filename = filename
-    while os.path.exists(new_filename):
-        new_filename = f"{base}_{counter}{ext}"
-        counter += 1
-    return new_filename
+def check_filename(filename):
+    
+    if not filename.endswith(".json"):
+        filename += ".json"
 
+    # Notify the user that default 'decoder_output.json' will be overwritten because no name given
+    if filename == "decoder_output.json" and os.path.exists(filename):
+        print(f"Warning: The default file '{filename}' already exists and will be always overwritten if '-o' is not used", file=sys.stderr)
+        return filename  
+    
+    # If the file exists but is not the default 'decoder_output.json', show an error and exit
+    if os.path.exists(filename):
+        print(f"Error: Output file '{filename}' already exists. Please choose a different name.", file=sys.stderr)
+        sys.exit(1)
+
+    return filename
 
 def main():
     args = create_arguments()
@@ -48,7 +55,7 @@ def main():
     diffpriv = args.diffpriv
     list_message_nemes = args.list_message_names
     vss = args.vss
-    output_file = get_unique_filename(args.outputfile)
+    output_file = check_filename(args.outputfile)
 
     print("Reading DBC file...")
     db = cantools.database.load_file(vehicle_db_file)
