@@ -20,6 +20,7 @@ class Metadata:
     last_epoch: float
     non_float_keys: List[str]
     stats: List[List[Any]]	# holds the header and stats that will be saved as a csv
+    first_entry_flag: bool # for printing output json in a memory-safe way
 
     def __init__(self, diffpriv):
         self.all_messages_count = 0
@@ -28,6 +29,7 @@ class Metadata:
         self.last_epoch = 0
         self.non_float_keys = []
         self.stats = []
+        self.first_entry_flag = True
 
         # Create the stats file header. Column M2 is needed for Welford's algorithm. It will be removed when saving the file
         # Explanation of M2: running variance accumulator used for computing stddev with Welford's algorithm
@@ -91,29 +93,35 @@ def process_lines(decoded_lines, metadata, outputfile, diffpriv):
     if len(decoded_lines) == 0:
         return metadata
 
-    # Save the output to a file
-    json.dump(decoded_lines, outputfile, indent=2)
+    for entry in decoded_lines:
+        if not metadata.first_entry_flag:
+            outputfile.write(',\n')
+        json.dump(entry, outputfile)
+        metadata.first_entry_flag = False
+
     metadata = process_stats(metadata, decoded_lines, diffpriv)
 
     metadata.decoded_message_count += len(decoded_lines)
-    if metadata.first_epoch == None:
+    if metadata.first_epoch is None:
         metadata.first_epoch = float(decoded_lines[0]['unix_epoch'])
 
-    metadata.last_epoch =float(decoded_lines[-1]['unix_epoch'])
-        
+    metadata.last_epoch = float(decoded_lines[-1]['unix_epoch'])
+
     decoded_lines.clear()
     return metadata
 
 def decode(db, input_file, output_file, query, vss, diffpriv):
     decoded_lines = []
+    first_entry_flag = True
     metadata = Metadata(diffpriv)
 
     outputfile = open(output_file, 'a')
+    outputfile.write("[\n")
 
     print("Opening input file...")
     with open(input_file, 'r') as input:
-        first_line_raw = input.readline()
-        first_line = first_line_raw.strip().split('\t')
+        #first_line_raw = input.readline()
+        #first_line = first_line_raw.strip().split('\t')
         # TODO: make check_input_syntax work, make an automated test for it
         #check_input_syntax(first_line)
 
@@ -145,14 +153,15 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
                 decode_func(decoded_lines, line, db, query, vss)
 
             # Release memoery every now and then. 40000000 is about 3g at maximum usage
-            if x % 40000000 == 0:
+            if x % 40000000 == 0 and x != 0:
+                print("Dumping decoded lines to outputfile to avoid running out of memory")
                 metadata = process_lines(decoded_lines, metadata, outputfile, diffpriv)
 
     print(f"Decoder output file created: {output_file}")
     print("Processing final stats..")
-    # TODO: possible bug: BRAKE_AMOUNT and BRAKE_PEDAL go to  twice if there's no stats processing & docede_lines clearing before this final call..
     metadata = process_lines(decoded_lines, metadata, outputfile, diffpriv)
 
+    outputfile.write("\n]")
     outputfile.close()
     return metadata
 
