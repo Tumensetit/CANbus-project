@@ -124,7 +124,7 @@ def decode(db, input_file, output_file, query, vss, diffpriv):
         # TODO: make check_input_syntax work, make an automated test for it
         #check_input_syntax(first_line)
 
-        rows = sum(1 for _ in input) + 1  # +1 to include the first line
+        rows = sum(1 for _ in input)
         metadata.all_messages_count = rows
         input.seek(0)
 
