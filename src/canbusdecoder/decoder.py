@@ -112,7 +112,6 @@ def process_lines(decoded_lines, metadata, outputfile, diffpriv):
 
 def decode(db, input_file, output_file, query, vss, diffpriv):
     decoded_lines = []
-    first_entry_flag = True
     metadata = Metadata(diffpriv)
 
     outputfile = open(output_file, 'a')
